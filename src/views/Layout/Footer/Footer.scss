@@ -1,0 +1,35 @@
+.footer {
+  background: $footer;
+  padding: 60px 0;
+  position: relative;
+  color: $gray-800;
+  .footer-head {
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+  .text-foot {
+    color: $gray-800;
+  }
+  .footer-list {
+    margin-bottom: 0;
+    li {
+      margin-bottom: 10px;
+      a {
+        transition: all 0.5s ease;
+        &:hover {
+          color: $theme-colour;
+        }
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  &.footer-border,
+  &.footer-bar {
+    border-top: 1px solid #eaeaea;
+  }
+  &.footer-bar {
+    padding: 30px 0;
+  }
+}
