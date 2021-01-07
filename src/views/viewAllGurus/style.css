@@ -1,0 +1,47 @@
+.view-profile-btn {
+	color: #fff !important;
+	font-weight: bold;
+	background: #181818;
+	padding: 10px 30px;
+	border-radius: 200px;
+	margin-top: 20px;
+	transition: all 0.3s;
+	border: 1px solid black;
+	cursor: pointer;
+	margin: 5px;
+}
+.view-profile-btn:hover {
+	background-color: white;
+	color: #0f0f0f !important;
+}
+.filters {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	width: 100%;
+	margin: 30px 0;
+	border-bottom: 0.5px solid darkgray;
+}
+.filterList {
+	list-style: none;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+}
+.active-filter {
+	color: #ff5001 !important;
+}
+.filterList-option {
+	cursor: pointer;
+	margin: 20px 10px;
+	color: #181818;
+	font-size: 13px;
+}
+.btn-container {
+	display: "flex";
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	align-items: center;
+}

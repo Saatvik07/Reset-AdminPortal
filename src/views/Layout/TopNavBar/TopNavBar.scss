@@ -22,7 +22,6 @@
 }
 
 #topnav {
-	position: fixed;
 	right: 0;
 	left: 0;
 	top: 0;
@@ -263,7 +262,7 @@
 	}
 
 	&.nav-sticky {
-		background: $black;
+		background: white;
 		box-shadow: $shadow;
 		.navigation-menu {
 			color: $dark !important;
