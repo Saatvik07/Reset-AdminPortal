@@ -1,16 +1,25 @@
-import React,{useEffect, useState} from 'react'
+import React,{useEffect, useState,useRef} from 'react'
 import {ListBox} from "primereact/listbox";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
+import { Toast } from 'primereact/toast';
 import Banner from '../Layout/Banner/Banner';
 import { Container,Row,Col,Spinner,Alert } from 'reactstrap';
+import "./style.css";
 function AddKeyword() {
+    const toast = useRef(null);
+    const toast1 = useRef(null);
     const [keywords,setKeywords] = useState([]);
     const [loading,setLoading] = useState(true);
     const [fetching,setFetching] = useState(false);
     const [inProgress,setInProgress] = useState(false);
-    const [visible,setVisible] = useState([false,false]);
     const [name,setName] = useState("");
+    const showSuccess = () => {
+        toast.current.show({severity:'success', summary: 'Category added', detail:`${name} has been added`, life: 3000});
+    }
+    const showError = () => {
+        toast1.current.show({severity:'error', summary: 'Failed to add', detail:'Please try again with a different name', life: 3000});
+    }
     const fetchCategories = ()=>{
         if(!loading){
             setFetching(true);
@@ -50,34 +59,25 @@ function AddKeyword() {
             body: JSON.stringify({name:name})
         }
         fetch(`https://la6s3169jc.execute-api.us-east-2.amazonaws.com/v1/skillset`,fetchOptions).then(response=>{
-            if(response.statusCode===200){
+            if(response.statusCode===201){
                 return response.json();
             }
             else{
-                setVisible([false,true]);
-                setTimeout(()=>{
-                    if(visible){
-                        setVisible([false,false]);
-                    }
-                },3000)
+                showError();
             }
         }).then(jsonResponse=>{
             return jsonResponse;
         }).then(()=>{
             setInProgress(false);
-            setVisible([true,false]);
-            setTimeout(()=>{
-                if(visible){
-                    setVisible([false,false]);
-                }
-            },3000)
+            showSuccess();
             setName("");
             fetchCategories();
         })
     }
     return (
         <div>
-            
+            <Toast ref={toast} position="bottom-right" />
+            <Toast ref={toast1} position="bottom-right" />
             {loading?
                 <div className="loader-container">
                     <div id="preloader">
@@ -105,15 +105,8 @@ function AddKeyword() {
                                 <ListBox options={keywords} filter optionLabel="name"
                                     itemTemplate={itemTemplate} className="category-list" />
                             </>}
-                            
                             </Col>
                             <Col md={6} className="right-container">
-                            <Alert color="success" isOpen={visible[0]} toggle={()=>{
-                                setVisible([false,false])
-                            }}>The keyword - {name} has been added</Alert>
-                            <Alert color="danger" isOpen={visible[1]} toggle={()=>{
-                                setVisible([false,false])
-                            }}>The keyword couldn't be added. Please try again</Alert>
                             <h4 className="left-heading">Add new Keyword</h4>
                             <div className="p-inputgroup">
                                 <InputText placeholder="Enter Name" id="filter-name" onChange={(event)=>{

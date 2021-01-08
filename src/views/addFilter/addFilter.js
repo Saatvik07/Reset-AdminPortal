@@ -1,17 +1,25 @@
-import React,{useEffect, useState} from 'react'
+import React,{useEffect, useRef, useState} from 'react'
 import {ListBox} from "primereact/listbox";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import Banner from '../Layout/Banner/Banner';
+import { Toast } from 'primereact/toast';
 import { Container,Row,Col,Spinner,Alert } from 'reactstrap';
 import "./style.css";
 function AddFilter() {
+    const toast = useRef(null);
+    const toast1 = useRef(null);
     const [filter,setFilters] = useState([]);
     const [loading,setLoading] = useState(true);
     const [fetching,setFetching] = useState(false);
     const [inProgress,setInProgress] = useState(false);
-    const [visible,setVisible] = useState([false,false]);
     const [name,setName] = useState("");
+    const showSuccess = () => {
+        toast.current.show({severity:'success', summary: 'Category added', detail:`${name} has been added`, life: 3000});
+    }
+    const showError = () => {
+        toast1.current.show({severity:'error', summary: 'Failed to add', detail:'Please try again with a different name', life: 3000});
+    }
     const fetchFilters = ()=>{
         if(!loading){
             setFetching(true);
@@ -55,30 +63,21 @@ function AddFilter() {
                 return response.json();
             }
             else{
-                setVisible([false,true]);
-                setTimeout(()=>{
-                    if(visible){
-                        setVisible([false,false]);
-                    }
-                },3000)
+                showError();
             }
         }).then(jsonResponse=>{
             return jsonResponse;
         }).then(()=>{
             setInProgress(false);
-            setVisible([true,false]);
-            setTimeout(()=>{
-                if(visible){
-                    setVisible([false,false]);
-                }
-            },3000)
+            showSuccess();
             setName("");
             fetchFilters();
         })
     }
     return (
         <div>
-            
+            <Toast ref={toast} position="bottom-right" />
+            <Toast ref={toast1} position="bottom-right" />
             {loading?
                 <div className="loader-container">
                     <div id="preloader">
@@ -109,12 +108,6 @@ function AddFilter() {
                             
                             </Col>
                             <Col md={6} className="right-container">
-                            <Alert color="success" isOpen={visible[0]} toggle={()=>{
-                                setVisible([false,false])
-                            }}>The filter - {name} has been added</Alert>
-                            <Alert color="danger" isOpen={visible[1]} toggle={()=>{
-                                setVisible([false,false])
-                            }}>The filter couldn't be added. Please try again</Alert>
                             <h4 className="left-heading">Add new EA filter</h4>
                             <div className="p-inputgroup">
                                 <InputText placeholder="Enter Name" id="filter-name" onChange={(event)=>{

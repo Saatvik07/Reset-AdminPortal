@@ -12,7 +12,10 @@ import {
 import Layout from './views/Layout/Layout';
 import routes from './routes';
 import './styles/helper.css';
-
+import 'primeicons/primeicons.css';
+import 'primereact/resources/primereact.css';
+import 'primeflex/primeflex.css';
+import 'primereact/resources/themes/saga-blue/theme.css';
 function withLayout(WrappedComponent) {
   return class extends React.PureComponent {
     render() {
