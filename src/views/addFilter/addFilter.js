@@ -6,16 +6,13 @@ import Banner from '../Layout/Banner/Banner';
 import { Container,Row,Col,Spinner,Alert } from 'reactstrap';
 import "./style.css";
 function AddFilter() {
-    const [categories,setCategories] = useState([]);
+    const [filter,setFilters] = useState([]);
     const [loading,setLoading] = useState(true);
     const [fetching,setFetching] = useState(false);
     const [inProgress,setInProgress] = useState(false);
     const [visible,setVisible] = useState([false,false]);
     const [name,setName] = useState("");
-    const onDismiss = ()=> setVisible(true);
-    
-    
-    const fetchCategories = ()=>{
+    const fetchFilters = ()=>{
         if(!loading){
             setFetching(true);
         }
@@ -27,7 +24,7 @@ function AddFilter() {
                 return jsonResponse;
             })
             .then(result=>{
-                setCategories(result.body);
+                setFilters(result.body);
                 if(loading){
                     setLoading(false);
                 }
@@ -37,7 +34,7 @@ function AddFilter() {
             });
     }
     useEffect(()=>{
-        fetchCategories();
+        fetchFilters();
     },[]);
     const itemTemplate = (option) => {
         return (
@@ -76,7 +73,7 @@ function AddFilter() {
                 }
             },3000)
             setName("");
-            fetchCategories();
+            fetchFilters();
         })
     }
     return (
@@ -106,7 +103,7 @@ function AddFilter() {
                             :
                             <>
                                 <h3 className="left-heading">Filters</h3>
-                                <ListBox options={categories} filter optionLabel="name"
+                                <ListBox options={filter} filter optionLabel="name"
                                     itemTemplate={itemTemplate} className="category-list" />
                             </>}
                             
