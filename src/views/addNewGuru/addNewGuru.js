@@ -18,7 +18,11 @@ function AddNewGuru() {
     const toast = useRef(null);
     const toast1 = useRef(null);
     const toast2 = useRef(null);
+    const toast3 = useRef(null);
+    const toast4 = useRef(null);
     const [name,setName] = useState({firstName:"",secondName:""});
+    const [email,setEmail] = useState("");
+    const [bio,setBio] = useState("");
     const [profileString,setProfileString] = useState("");
     const [thumbnailString,setThumbnailString] = useState("");
     const [videoString,setVideoString] = useState("");
@@ -28,6 +32,11 @@ function AddNewGuru() {
     const [selectedCategory,setSelectedCategory] = useState(null);
     const [selectedFilter,setSelectedFilter] = useState(null);
     const [selectedKeyword,setSelectedKeyword] = useState(null);
+    const [links,setLinks] = useState({
+        profile:"",
+        thumbnail:"",
+        video:"",
+    })
     const [profilePreview,setProfilePreview] = useState({
         image:null,
         name:null,
@@ -44,7 +53,7 @@ function AddNewGuru() {
         size:null,
     });
     const [loading,setLoading] = useState({keyword:true,filter:true,category:true});
-    const [uploading,setUploading] = useState({profile:false,thumbnail:false,video:false});
+    const [uploading,setUploading] = useState({profile:false,thumbnail:false,video:false,whole:false});
     const fetchFilters = ()=>{
         fetch(`https://1qpe25db41.execute-api.us-east-2.amazonaws.com/v1/filter`).then(response=>{
                 if(response.ok){
@@ -101,17 +110,27 @@ function AddNewGuru() {
             toast.current.show({severity: 'success', summary: 'Success', detail: 'The profile picture was uploaded'});
         }
         else if(type===2){
-            toast1.current.show({severity: 'success', summary: 'Success', detail: 'The intro vide thumbnail was uploaded'});
+            toast1.current.show({severity: 'success', summary: 'Success', detail: 'The intro video thumbnail was uploaded'});
         }
         else if(type===3){
             toast2.current.show({severity: 'success', summary: 'Success', detail: 'The intro video was uploaded'});
         }
+        else if(type===4){
+            toast4.current.show({severity: 'success', summary: 'Success', detail: `${name.firstName} ${name.secondName} was added successfully`});
+        }
     }
+    
     useEffect(()=>{
         fetchCategories();
         fetchFilters();
         fetchKeywords();
     },[])
+    const checkValidations = () =>{
+        if(name.firstName!==""&&name.secondName!==""&&email!==""&&bio!=="" && selectedCategory &&selectedCategory.length>0&&selectedFilter&&selectedFilter.length>0&&selectedKeyword&&selectedKeyword.length>0){
+            return true;
+        }
+        return false;
+    }
     const itemTemplate = (option) => {
         if (option) {
             return (
@@ -126,9 +145,10 @@ function AddNewGuru() {
         setUploading((prev)=>{
             return {...prev,profile:true}
         })
+        const guruName=name.firstName+" "+name.secondName;
         const fetchOptions = {
             method: "POST",
-            body: JSON.stringify({guruName:name.firstName+" "+name.secondName,type:"profile"}),
+            body: JSON.stringify({guruName:guruName,type:"profile"}),
         };
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
         if(response.ok){
@@ -149,7 +169,10 @@ function AddNewGuru() {
             setUploading((prev)=>{
                 return {...prev,profile:false}
             })
-            onUploadComplete();
+            setLinks((prev)=>{
+                return {...prev,profile:resObj.uploadURL.split("?")[0]}
+            })
+            onUploadComplete(1);
         
         }).catch(err=>{
             console.log(err);
@@ -159,9 +182,10 @@ function AddNewGuru() {
         setUploading((prev)=>{
             return {...prev,thumbnail:true}
         })
+        const guruName=name.firstName+" "+name.secondName;
         const fetchOptions = {
 			method: "POST",
-			body: JSON.stringify({guruName:name.firstName+" "+name.secondName,type:"thumbnail"}),
+			body: JSON.stringify({guruName:guruName,type:"thumbnail"}),
 		};
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
             if(response.ok){
@@ -180,9 +204,12 @@ function AddNewGuru() {
             let blobData = new Blob([new Uint8Array(blobArray)],{type:'image/jpeg'});
             const result = await fetch(resObj.uploadURL,{method:"PUT",body:blobData});
             setUploading((prev)=>{
-                return {...prev,thumbnail:true}
+                return {...prev,thumbnail:false}
             })
-            onUploadComplete();
+            setLinks((prev)=>{
+                return {...prev,thumbnail:resObj.uploadURL.split("?")[0]}
+            })
+            onUploadComplete(2);
         
         }).catch(err=>{
             console.log(err);
@@ -193,9 +220,10 @@ function AddNewGuru() {
             return {...prev,video:true}
         })
         const videoID = parseInt(Math.random() * 10000000);
+        const guruName=name.firstName+" "+name.secondName;
         const fetchOptions = {
             method: "POST",
-            body: JSON.stringify({guruName:name.firstName+" "+name.secondName,videoID:videoID,type:"intro"}),
+            body: JSON.stringify({guruName:guruName,videoID:videoID,type:"intro"}),
         };
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadVideo",fetchOptions).then(response=>{
         if(response.ok){
@@ -214,9 +242,12 @@ function AddNewGuru() {
             let blobData = new Blob([new Uint8Array(blobArray)],{type:'image/jpeg'});
             const result = await fetch(resObj.uploadURL,{method:"PUT",body:blobData});
             setUploading((prev)=>{
-                return {...prev,video:true}
+                return {...prev,video:false}
             })
-            onUploadComplete();
+            setLinks((prev)=>{
+                return {...prev,video:resObj.uploadURL.split("?")[0]}
+            })
+            onUploadComplete(3);
         
         }).catch(err=>{
             console.log(err);
@@ -276,9 +307,91 @@ function AddNewGuru() {
             reader.readAsDataURL(file);
         }
     }
+    const handleAdd = (event)=>{
+        event.preventDefault();
+        const valid = checkValidations();
+        if(!valid){
+            toast3.current.show({severity: 'error', summary: 'All fields are mandatory', detail: 'Please check that all fields are completely filled'});
+        }
+        else{
+            let guruObj = {
+                profilePhoto:links.profile,
+                techniqueVideos:[],
+                introVideo:{
+                    photo:links.thumbnail,
+                    video:links.video
+                },
+                bio:bio,
+                firstName:name.firstName,
+                lastName:name.secondName,
+                email:email,
+                addedBy:{
+                    id:'manual_entry_by_saatvik',
+                    name:{
+                        firstName:"Saatvik",
+                        secondName:"Bhatnagar"
+                    }
+                },
+                categories:selectedCategory,
+                filters: selectedFilter,
+                keywords:selectedKeyword,
+            }
+            const fetchOptions = {
+                method: "POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body: JSON.stringify(guruObj),
+            }
+            fetch("https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus",fetchOptions).then(response=>{
+                if(response.ok){
+                    return response.json();
+                }
+            })
+            .then(jsonResponse=>{
+                return jsonResponse;
+            })
+            .then(resObj=>{
+                onUploadComplete(4);
+                setName({firstName:"",secondName:""});
+                setEmail("");
+                setBio("");
+                setSelectedCategory(null);
+                setSelectedFilter(null);
+                setSelectedKeyword(null);
+                setProfilePreview({
+                    image:null,
+                    name:null,
+                    size:null,
+                });
+                setThumbnailPreview({
+                    image:null,
+                    name:null,
+                    size:null,
+                });
+                setVideoPreview({
+                    image:null,
+                    name:null,
+                    size:null,
+                });
+                setLinks({
+                    profile:"",
+                    thumbnail:"",
+                    video:"",
+                })
+                document.getElementById("guru-profile").value="";
+                document.getElementById("guru-intro-video").value="";
+                document.getElementById("guru-intro-thumbnail").value="";
+            })
+        }
+
+    }
     return (
         <div>
             <Toast ref={toast} position="bottom-right"></Toast>
+            <Toast ref={toast1} position="bottom-right"></Toast>
+            <Toast ref={toast2} position="bottom-right"></Toast>
+            <Toast ref={toast3} position="bottom-right"></Toast>
             {!loading.category && !loading.filter && !loading.keyword ? 
             <>
                 <Banner title="Add New Guru"/>
@@ -330,7 +443,7 @@ function AddNewGuru() {
                                         value={name.lastName}
                                         onChange={(event)=>{
                                             setName((prev)=>{
-                                                return {...prev,lastName:event.target.value}
+                                                return {...prev,secondName:event.target.value}
                                             })
                                         }}
                                     />
@@ -356,6 +469,10 @@ function AddNewGuru() {
                                         type="email"
                                         className="form-control pl-5"
                                         placeholder="Your email :"
+                                        value={email}
+                                        onChange={(event)=>{
+                                            setEmail(event.target.value)
+                                        }}
                                     />
                                     </FormGroup>
                                 </Col>
@@ -377,6 +494,10 @@ function AddNewGuru() {
                                         id="comments"
                                         rows="4"
                                         className="form-control pl-5"
+                                        value={bio}
+                                        onChange={(event)=>{
+                                            setBio(event.target.value);
+                                        }}
                                     ></textarea>
                                     </FormGroup>
                                 </Col>
@@ -465,7 +586,6 @@ function AddNewGuru() {
                                                 }
                                             </div>
                                             {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
-                                           
                                         </FormGroup>
                                     </Col>
                                 </Row>
@@ -505,6 +625,7 @@ function AddNewGuru() {
                                     name="send"
                                     className="touch-btn"
                                     value="Add"
+                                    onClick={handleAdd}
                                     />
                                 </Col>
                                 </Row>
