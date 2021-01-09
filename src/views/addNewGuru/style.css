@@ -57,3 +57,71 @@
 	padding: 5px 10px;
 	border: 1px solid #ff5001;
 }
+.upload-btn {
+	color: #fff !important;
+	font-weight: bold;
+	background-color: #191b1e;
+	padding: 15px;
+	border-radius: 200px;
+	border: 1px solid #191b1e;
+	transition: all 0.3s;
+	width: 7.5%;
+}
+.upload-btn:hover {
+	background-color: #fff;
+	color: #191b1e !important;
+}
+input[type="file"]::-webkit-file-upload-button {
+	padding: 10px 20px !important;
+	border-radius: 200px !important;
+	background: linear-gradient(-63deg, #ff1b01 5%, #ff8c00 100%);
+	color: white;
+	border: 1px solid #ff5001 !important;
+	margin-right: 20px;
+}
+input[type="file"]::-webkit-file-upload-button:active {
+	border: none;
+}
+#guru-profile,
+#guru-intro-thumbnail,
+#guru-intro-video {
+	padding: 10px;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+}
+.upload-container {
+	display: flex;
+	flex-direction: column;
+}
+.preview-container {
+	height: 150px;
+	padding: 30px;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+}
+.preview-video-container {
+	height: 200px;
+	padding: 30px;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+}
+.preview-img {
+	height: 100px;
+	width: auto;
+	margin-right: 30px;
+}
+.preview-video {
+	height: 150px;
+	width: auto;
+	margin-right: 30px;
+}
+.preview-bar {
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+.preview-bar > button {
+	background-color: transparent;
+	border: none;
+	margin: 0 30px;
+}
+.preview-bar > h6 {
+	margin: 0 20px;
+}

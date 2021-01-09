@@ -1,27 +1,50 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
     Col,
     Container,
     Form,
     FormGroup,
     Row,
-    Alert,
+    Spinner,
     Label,
     Input
 } from 'reactstrap';
+import { Toast } from 'primereact/toast';
 import FeatherIcon from 'feather-icons-react';
 import { MultiSelect } from 'primereact/multiselect';
 import "./style.css"
 import Banner from '../Layout/Banner/Banner';
 function AddNewGuru() {
-    
+    const toast = useRef(null);
+    const toast1 = useRef(null);
+    const toast2 = useRef(null);
+    const [name,setName] = useState({firstName:"",secondName:""});
+    const [profileString,setProfileString] = useState("");
+    const [thumbnailString,setThumbnailString] = useState("");
+    const [videoString,setVideoString] = useState("");
     const [keywords,setKeywords] = useState([]);
     const [categories,setCategories] = useState([]);
     const [filters,setFilters] = useState([]);
     const [selectedCategory,setSelectedCategory] = useState(null);
     const [selectedFilter,setSelectedFilter] = useState(null);
     const [selectedKeyword,setSelectedKeyword] = useState(null);
+    const [profilePreview,setProfilePreview] = useState({
+        image:null,
+        name:null,
+        size:null,
+    });
+    const [thumbnailPreview,setThumbnailPreview] = useState({
+        image:null,
+        name:null,
+        size:null,
+    });
+    const [videoPreview,setVideoPreview] = useState({
+        image:null,
+        name:null,
+        size:null,
+    });
     const [loading,setLoading] = useState({keyword:true,filter:true,category:true});
+    const [uploading,setUploading] = useState({profile:false,thumbnail:false,video:false});
     const fetchFilters = ()=>{
         fetch(`https://1qpe25db41.execute-api.us-east-2.amazonaws.com/v1/filter`).then(response=>{
                 if(response.ok){
@@ -73,6 +96,17 @@ function AddNewGuru() {
                 console.log(error);
             });
     }
+    const onUploadComplete = (type) => {
+        if(type===1){
+            toast.current.show({severity: 'success', summary: 'Success', detail: 'The profile picture was uploaded'});
+        }
+        else if(type===2){
+            toast1.current.show({severity: 'success', summary: 'Success', detail: 'The intro vide thumbnail was uploaded'});
+        }
+        else if(type===3){
+            toast2.current.show({severity: 'success', summary: 'Success', detail: 'The intro video was uploaded'});
+        }
+    }
     useEffect(()=>{
         fetchCategories();
         fetchFilters();
@@ -86,11 +120,165 @@ function AddNewGuru() {
                 </div>
             );
         }
-
         return "Choose a value";
+    }
+    const uploadHandlerProfile = (event)=>{
+        setUploading((prev)=>{
+            return {...prev,profile:true}
+        })
+        const fetchOptions = {
+            method: "POST",
+            body: JSON.stringify({guruName:name.firstName+" "+name.secondName,type:"profile"}),
+        };
+        fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
+        if(response.ok){
+            return response.json();
+        }
+        })
+        .then(jsonResponse=>{
+            return jsonResponse;
+        })
+        .then(async (resObj)=>{
+            let binary = atob(profileString.split(",")[1])
+            let blobArray=[];
+            for(let i=0;i<binary.length;i++){
+                blobArray.push(binary.charCodeAt(i))
+            }
+            let blobData = new Blob([new Uint8Array(blobArray)],{type:'image/jpeg'});
+            const result = await fetch(resObj.uploadURL,{method:"PUT",body:blobData});
+            setUploading((prev)=>{
+                return {...prev,profile:false}
+            })
+            onUploadComplete();
+        
+        }).catch(err=>{
+            console.log(err);
+        });
+    }
+    const uploadHandlerThumbnail = (event)=>{
+        setUploading((prev)=>{
+            return {...prev,thumbnail:true}
+        })
+        const fetchOptions = {
+			method: "POST",
+			body: JSON.stringify({guruName:name.firstName+" "+name.secondName,type:"thumbnail"}),
+		};
+        fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
+            if(response.ok){
+            return response.json();
+            }
+        })
+        .then(jsonResponse=>{
+            return jsonResponse;
+        })
+        .then(async (resObj)=>{
+            let binary = atob(thumbnailString.split(",")[1])
+            let blobArray=[];
+            for(let i=0;i<binary.length;i++){
+                blobArray.push(binary.charCodeAt(i))
+            }
+            let blobData = new Blob([new Uint8Array(blobArray)],{type:'image/jpeg'});
+            const result = await fetch(resObj.uploadURL,{method:"PUT",body:blobData});
+            setUploading((prev)=>{
+                return {...prev,thumbnail:true}
+            })
+            onUploadComplete();
+        
+        }).catch(err=>{
+            console.log(err);
+        });
+    }
+    const uploadHandlerVideo = (event)=>{
+        setUploading((prev)=>{
+            return {...prev,video:true}
+        })
+        const videoID = parseInt(Math.random() * 10000000);
+        const fetchOptions = {
+            method: "POST",
+            body: JSON.stringify({guruName:name.firstName+" "+name.secondName,videoID:videoID,type:"intro"}),
+        };
+        fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadVideo",fetchOptions).then(response=>{
+        if(response.ok){
+            return response.json();
+        }
+        })
+        .then(jsonResponse=>{
+            return jsonResponse;
+        })
+        .then(async (resObj)=>{
+            let binary = atob(videoString.split(",")[1])
+            let blobArray=[];
+            for(let i=0;i<binary.length;i++){
+                blobArray.push(binary.charCodeAt(i))
+            }
+            let blobData = new Blob([new Uint8Array(blobArray)],{type:'image/jpeg'});
+            const result = await fetch(resObj.uploadURL,{method:"PUT",body:blobData});
+            setUploading((prev)=>{
+                return {...prev,video:true}
+            })
+            onUploadComplete();
+        
+        }).catch(err=>{
+            console.log(err);
+        });
+    }
+    const handleChangeProfile = (event) =>{
+        const file = document.getElementById("guru-profile").files[0];
+        if(file){
+            let reader = new FileReader();
+            reader.onload = (e)=>{
+                if (!e.target.result.includes('data:image/jpeg')) {
+                    alert('Wrong file type - JPEG only.')
+                }
+                else{
+                    setProfilePreview((prev)=>{
+                        return {image:URL.createObjectURL(event.target.files[0]),name:event.target.files[0].name,size:Math.round(event.target.files[0].size/1024)}
+                    })
+                    setProfileString(e.target.result);
+                }
+            } 
+            reader.readAsDataURL(file);
+        }
+    }
+    const handleChangeThumbnail = (event) =>{
+        const file = document.getElementById("guru-intro-thumbnail").files[0];
+        if(file){
+            let reader = new FileReader();
+            reader.onload = (e)=>{
+                if (!e.target.result.includes('data:image/jpeg')) {
+                    alert('Wrong file type - JPEG only.')
+                }
+                else{
+                    setThumbnailPreview((prev)=>{
+                        return {image:URL.createObjectURL(event.target.files[0]),name:event.target.files[0].name,size:Math.round(event.target.files[0].size/1024)}
+                    })
+                    setThumbnailString(e.target.result);
+                }
+            } 
+            reader.readAsDataURL(file);
+        }
+    }
+    const handleChangeVideo = (event) =>{
+        const file = document.getElementById("guru-intro-video").files[0];
+        if(file){
+            let reader = new FileReader();
+            reader.onload = (e)=>{
+                if (!e.target.result.includes('data:video/mp4')) {
+                    alert('Wrong file type - MP4 only.')
+                }
+                else{
+                    setVideoPreview((prev)=>{
+                        return {image:URL.createObjectURL(event.target.files[0]),name:event.target.files[0].name,size:Math.round(event.target.files[0].size/1024)}
+                    })
+                    setVideoString(e.target.result);
+                }
+            } 
+            reader.readAsDataURL(file);
+        }
     }
     return (
         <div>
+            <Toast ref={toast} position="bottom-right"></Toast>
             {!loading.category && !loading.filter && !loading.keyword ? 
             <>
                 <Banner title="Add New Guru"/>
@@ -121,6 +309,12 @@ function AddNewGuru() {
                                         type="text"
                                         className="form-control pl-5"
                                         placeholder="First Name :"
+                                        value={name.firstName}
+                                        onChange={(event)=>{
+                                            setName((prev)=>{
+                                                return {...prev,firstName:event.target.value}
+                                            })
+                                        }}
                                     />
                                     </FormGroup>
                                 </Col>
@@ -133,6 +327,12 @@ function AddNewGuru() {
                                         type="text"
                                         className="form-control pl-3 mt-2"
                                         placeholder="Last Name :"
+                                        value={name.lastName}
+                                        onChange={(event)=>{
+                                            setName((prev)=>{
+                                                return {...prev,lastName:event.target.value}
+                                            })
+                                        }}
                                     />
                                     </FormGroup>
                                 </Col>
@@ -206,10 +406,94 @@ function AddNewGuru() {
                                     <Col md={12}>
                                         <FormGroup className="multiselect-container">
                                             <Label>
-                                                Select Filters<span className="text-danger">*</span>{' '}
+                                                Select Keywords<span className="text-danger">*</span>{' '}
                                             </Label>
                                             <MultiSelect value={selectedKeyword} options={keywords}  onChange={(e) => {
                                                 setSelectedKeyword(e.value)}} optionLabel="name" placeholder="" filter className="multiselect-custom" itemTemplate={itemTemplate} selectedItemTemplate={itemTemplate} />
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md={12}>
+                                        <FormGroup className="upload-container">
+                                            <Label>
+                                                Profile Photo<span className="text-danger">*</span>{' '}
+                                            </Label>
+                                            <input id="guru-profile" onChange={handleChangeProfile} type="file"/>
+                                            <div className="preview-container">
+                                                {!profilePreview.image?<h5>Select a file to upload</h5>:
+                                                <div className="preview-bar">
+                                                    <img src={profilePreview.image} className="preview-img" alt="preview"/>
+                                                    <h6>{profilePreview.name}</h6>
+                                                    <h6>{`${profilePreview.size} kb`}</h6>
+                                                    <button onClick={()=>{
+                                                        document.getElementById("guru-profile").value="";
+                                                        setProfilePreview({name:null,image:null,size:null});
+                                                    }}>
+                                                        <FeatherIcon icon="x-square"/>
+                                                    </button>
+                                                </div>
+                                                
+                                                }
+                                            </div>
+                                            {uploading.profile?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerProfile}><FeatherIcon icon="upload"/></button>}
+                                            
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md={12}>
+                                        <FormGroup className="upload-container">
+                                            <Label>
+                                                Intro Video Thumbnail<span className="text-danger">*</span>{' '}
+                                            </Label>
+                                            <input id="guru-intro-thumbnail" onChange={handleChangeThumbnail} type="file"/>
+                                            <div className="preview-container">
+                                                {!thumbnailPreview.image?<h5>Select a file to upload</h5>:
+                                                <div className="preview-bar">
+                                                    <img src={thumbnailPreview.image} className="preview-img" alt="preview"/>
+                                                    <h6>{thumbnailPreview.name}</h6>
+                                                    <h6>{`${thumbnailPreview.size} kb`}</h6>
+                                                    <button onClick={()=>{
+                                                        document.getElementById("guru-intro-thumbnail").value="";
+                                                        setThumbnailPreview({name:null,image:null,size:null});
+                                                    }}>
+                                                        <FeatherIcon icon="x-square"/>
+                                                    </button>
+                                                </div>
+                                                
+                                                }
+                                            </div>
+                                            {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
+                                           
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col md={12}>
+                                        <FormGroup className="upload-container">
+                                            <Label>
+                                                Intro Video<span className="text-danger">*</span>{' '}
+                                            </Label>
+                                            <input id="guru-intro-video" onChange={handleChangeVideo} type="file"/>
+                                            <div className="preview-video-container">
+                                                {!videoPreview.image?<h5>Select a file to upload</h5>:
+                                                <div className="preview-bar">
+                                                    <video src={videoPreview.image} className="preview-video" controls/>
+                                                    <h6>{videoPreview.name}</h6>
+                                                    <h6>{`${videoPreview.size} kb`}</h6>
+                                                    <button onClick={()=>{
+                                                        document.getElementById("guru-intro-video").value="";
+                                                        setVideoPreview({name:null,image:null,size:null});
+                                                    }}>
+                                                        <FeatherIcon icon="x-square"/>
+                                                    </button>
+                                                </div>
+                                                
+                                                }
+                                            </div>
+                                            {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
+                                            
                                         </FormGroup>
                                     </Col>
                                 </Row>
