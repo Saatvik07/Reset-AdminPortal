@@ -126,7 +126,7 @@ function AddNewGuru() {
         fetchKeywords();
     },[])
     const checkValidations = () =>{
-        if(name.firstName!==""&&name.secondName!==""&&email!==""&&bio!=="" && selectedCategory &&selectedCategory.length>0&&selectedFilter&&selectedFilter.length>0&&selectedKeyword&&selectedKeyword.length>0){
+        if(name.firstName!==""&&name.secondName!==""&&email!==""&&bio!=="" && selectedCategory &&selectedCategory.length>0&&selectedFilter&&selectedFilter.length>0&&selectedKeyword&&selectedKeyword.length>0&&links.profile!==""&&links.thumbnail!==""&&links.video!==""){
             return true;
         }
         return false;
@@ -151,9 +151,9 @@ function AddNewGuru() {
             body: JSON.stringify({guruName:guruName,type:"profile"}),
         };
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
-        if(response.ok){
-            return response.json();
-        }
+            if(response.ok){
+                return response.json();
+            }
         })
         .then(jsonResponse=>{
             return jsonResponse;
@@ -316,7 +316,10 @@ function AddNewGuru() {
         else{
             let guruObj = {
                 profilePhoto:links.profile,
-                techniqueVideos:[],
+                techniqueVideos:{
+                    videoID:1,
+                    videoList:[],
+                },
                 introVideo:{
                     photo:links.thumbnail,
                     video:links.video

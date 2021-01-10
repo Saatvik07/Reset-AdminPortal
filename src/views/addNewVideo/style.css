@@ -1,0 +1,16 @@
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+	border-color: #ff5001 !important;
+	color: #ff5001;
+}
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
+	box-shadow: 0 0 0 0.2rem #ff5001;
+}
+.p-tabview-nav {
+	display: flex;
+	justify-content: center;
+}
+.no-video-container {
+	display: flex;
+	justify-content: center;
+	margin: 50px auto;
+}
