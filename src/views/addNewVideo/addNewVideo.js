@@ -124,7 +124,6 @@ function AddNewVideo() {
     }
     useEffect(()=>{
         fetchGuru();
-        
     },[])
     const onUploadComplete = (type) => {
         if(type===1){
@@ -320,7 +319,7 @@ function AddNewVideo() {
                     setActiveIndex(e.index);
                 }}>
                     <TabPanel header="Add Video">
-                        <Banner title="Add New Guru"/>
+                        <Banner title="Add New Video"/>
                         <Container>
                             <Row className="justify-content-center">
                             <Col lg={10} xs={12}>
