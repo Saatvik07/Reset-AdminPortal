@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef} from 'react'
 import { Container, Row, Col, FormGroup, Spinner,Label } from 'reactstrap';
 import { enGB } from 'date-fns/locale';
-import FeatherIcon from 'feather-icons-react';
 import { DatePickerCalendar } from 'react-nice-dates';
 import { Calendar } from 'primereact/calendar';
 import { InputNumber } from 'primereact/inputnumber';

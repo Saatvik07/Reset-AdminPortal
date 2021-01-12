@@ -388,8 +388,11 @@ function AddNewVideo() {
                                                         </div>
                                                         
                                                         }
+                                                        <div className="upload-btn-container">
+                                                            {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
+                                                        </div>
                                                     </div>
-                                                    {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
+
                                                 </FormGroup>
                                             </Col>
                                         </Row>
@@ -415,9 +418,10 @@ function AddNewVideo() {
                                                         </div>
                                                         
                                                         }
+                                                        <div className="upload-btn-container">
+                                                            {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
+                                                        </div>
                                                     </div>
-                                                    {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
-                                                    
                                                 </FormGroup>
                                             </Col>
                                         </Row>

@@ -82,7 +82,6 @@ input[type="file"]::-webkit-file-upload-button {
 input[type="file"]::-webkit-file-upload-button:active {
 	border: none;
 }
-
 #guru-profile,
 #guru-intro-thumbnail,
 #guru-intro-video {
@@ -97,6 +96,18 @@ input[type="file"]::-webkit-file-upload-button:active {
 	/* height: 150px; */
 	padding: 30px;
 	border: 1px solid rgba(0, 0, 0, 0.25);
+}
+.current-profile-container {
+	height: 300px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	margin-bottom: 30px;
+}
+.current-profile-img {
+	height: 250px;
+	width: auto;
 }
 .preview-video-container {
 	/* height: 200px; */
@@ -128,6 +139,17 @@ input[type="file"]::-webkit-file-upload-button:active {
 }
 .bio-textarea {
 	height: 150px !important;
+}
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+	border-color: #ff5001 !important;
+	color: #ff5001;
+}
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
+	box-shadow: 0 0 0 0.2rem #ff5001;
+}
+.p-tabview-nav {
+	display: flex;
+	justify-content: center;
 }
 .upload-btn-container {
 	width: 100%;

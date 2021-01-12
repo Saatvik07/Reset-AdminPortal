@@ -496,7 +496,7 @@ function AddNewGuru() {
                                         name="comments"
                                         id="comments"
                                         rows="4"
-                                        className="form-control pl-5"
+                                        className="form-control bio-textarea pl-5"
                                         value={bio}
                                         onChange={(event)=>{
                                             setBio(event.target.value);
@@ -559,8 +559,11 @@ function AddNewGuru() {
                                                 </div>
                                                 
                                                 }
+                                                <div className="upload-btn-container">
+                                                    {uploading.profile?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerProfile}><FeatherIcon icon="upload"/></button>}
+                                                </div>
                                             </div>
-                                            {uploading.profile?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerProfile}><FeatherIcon icon="upload"/></button>}
+                                            
                                             
                                         </FormGroup>
                                     </Col>
@@ -587,8 +590,11 @@ function AddNewGuru() {
                                                 </div>
                                                 
                                                 }
+                                                <div className="upload-btn-container">
+                                                    {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
+                                                </div>
                                             </div>
-                                            {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
+                                            
                                         </FormGroup>
                                     </Col>
                                 </Row>
@@ -614,9 +620,10 @@ function AddNewGuru() {
                                                 </div>
                                                 
                                                 }
+                                                <div className="upload-btn-container">
+                                                    {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
+                                                </div>
                                             </div>
-                                            {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
-                                            
                                         </FormGroup>
                                     </Col>
                                 </Row>
