@@ -9,11 +9,13 @@ import {
     Label,
     Input
 } from 'reactstrap';
+import { Dialog } from 'primereact/dialog';
 import { Toast } from 'primereact/toast';
 import FeatherIcon from 'feather-icons-react';
 import { MultiSelect } from 'primereact/multiselect';
 import {useLocation} from "react-router-dom";
 import { TabView, TabPanel } from 'primereact/tabview';
+import {Button} from "primereact/button";
 import "./style.css"
 import Banner from '../Layout/Banner/Banner';
 function UpdateGuru() {
@@ -36,6 +38,12 @@ function UpdateGuru() {
     const [selectedCategory,setSelectedCategory] = useState(null);
     const [selectedFilter,setSelectedFilter] = useState(null);
     const [selectedKeyword,setSelectedKeyword] = useState(null);
+    const [displayDialog,setDisplayDialog] = useState({
+        data:false,
+        profile:false,
+        introVideo:false,
+    });
+    const [change,setChange] = useState(null);
     const [links,setLinks] = useState({
         profile:"",
         thumbnail:"",
@@ -336,11 +344,16 @@ function UpdateGuru() {
             reader.readAsDataURL(file);
         }
     }
-    const handleAdd = (event)=>{
-        event.preventDefault();
+    const handleUpdate = ()=>{
+        if(change.length>0){
+
+        }
+        else{
+            toast3.current.show({severity: 'error', summary: 'No changes found', detail: 'Please make changes to the existing values to update them'});
+        }
         const valid = checkValidations();
         if(!valid){
-            toast3.current.show({severity: 'error', summary: 'All fields are mandatory', detail: 'Please check that all fields are completely filled'});
+            
         }
         else{
             let guruObj = {
@@ -417,14 +430,152 @@ function UpdateGuru() {
             })
         }
     }
-    const handleUpdateData = ()=>{
-
-    }
-    const handleUpdateProfile = ()=>{
-
-    }
-    const handleUpdateIntro = () =>{
+    const handleUpdateData = (event)=>{
+        event.preventDefault();
+        const changeArray=[];
+        if(!(guruObj.firstName===name.firstName)){
+            console.log("Blahhh");
+            changeArray.push({
+                name:"First Name",
+                new:name.firstName,
+                old:guruObj.firstName,
+            })
+        }
         
+        if(!(guruObj.lastName===name.secondName)){
+            changeArray.push({
+                name:"Last Name",
+                new:name.secondName,
+                old:guruObj.lastName,
+            })
+        }
+        if(!(guruObj.email===email)){
+            changeArray.push({
+                name:"Email ID",
+                new:email,
+                old:guruObj.email,
+            })
+        }
+        let oldCategories = "";
+        guruObj.categories.forEach(category=>{
+            oldCategories+=(category.name+", ");
+        })
+        let newCategories ="";
+        selectedCategory.forEach(category=>{
+            newCategories+=(category.name+", ");
+        })
+        if(!(newCategories===oldCategories)){
+            changeArray.push({
+                name:"Categories",
+                new:newCategories,
+                old:oldCategories,
+            })
+        }
+        // let oldFilters = "";
+        // guruObj.filters.forEach(filter=>{
+        //     oldFilters+=(filter.name+", ");
+        // })
+        // let newFilters ="";
+        // selectedFilter.forEach(filter=>{
+        //     newFilters+=(filter.name+", ");
+        // })
+        // if(!(newFilters===oldFilters)){
+        //     changeArray.push({
+        //         name:"Filters",
+        //         new:newFilters,
+        //         old:oldFilters,
+        //     })
+        // }
+        let oldKeywords = "";
+        guruObj.keywords.forEach(keyword=>{
+            oldKeywords+=(keyword.name+", ");
+        })
+        let newKeywords ="";
+        selectedKeyword.forEach(keyword=>{
+            newKeywords+=(keyword.name+", ");
+        })
+        if(!(newKeywords===oldKeywords)){
+            changeArray.push({
+                name:"Keywords",
+                new:newKeywords,
+                old:oldKeywords,
+            })
+        }
+        setChange(changeArray);
+        setDisplayDialog((prev)=>{
+            return {...prev,data:true}
+        });
+
+    }
+    const handleUpdateProfile = (event)=>{
+        event.preventDefault();
+        const changeArray = [];
+        // if(links.profile!==""){
+        //     changeArray.push({
+        //         name:"Profile",
+        //         old:guruObj.profilePhoto,
+        //         new:links.profile,
+        //     })
+        // }
+        changeArray.push({
+            name:"Profile Picture",
+            old:guruObj.profilePhoto,
+            new:guruObj.profilePhoto,
+        })
+        setChange(changeArray);
+        setDisplayDialog((prev)=>{
+            return {
+                ...prev,
+                profile:true,
+            }
+        })
+    }
+    const handleUpdateIntro = (event) =>{
+        event.preventDefault();
+        const changeArray=[];
+        // if(links.thumbnail!==""){
+        //     changeArray.push({
+        //         name:"Intro Video Thumbnail",
+        //         old:guruObj.introVideo.photo,
+        //         new:links.thumbnail,
+        //     })
+        // }
+        // if(links.video!==""){
+        //     changeArray.push({
+        //         name:"Intro Video",
+        //         old:guruObj.introVideo.video,
+        //         new:links.video,
+        //     })
+        // }
+        changeArray.push({
+            name:"Intro Video Thumbnail",
+            type:"thumbnail",
+            old:guruObj.introVideo.photo,
+            new:guruObj.introVideo.photo,
+        })
+        changeArray.push({
+            name:"Intro Video",
+            type:"video",
+            old:guruObj.introVideo.video,
+            new:guruObj.introVideo.video,
+        })
+        setChange(changeArray);
+        setDisplayDialog((prev)=>{
+            return {
+                ...prev,
+                introVideo:true,
+            }
+        })
+    }
+    const footer =(type) => {
+        return (<div className="comparison-footer">
+            <Button label="Cancel" icon="pi pi-times" onClick={() => setDisplayDialog((prev)=>{
+                const obj = {...prev};
+                obj[`${type}`]=false;
+                return obj
+            })} className="cancel-btn" />
+            <Button label="Update" icon="pi pi-check" onClick={() => {}} autoFocus className="update-confirm-btn" />
+        </div>);
     }
     return (
         <div>
@@ -432,6 +583,87 @@ function UpdateGuru() {
             <Toast ref={toast1} position="bottom-right"></Toast>
             <Toast ref={toast2} position="bottom-right"></Toast>
             <Toast ref={toast3} position="bottom-right"></Toast>
+            <Dialog header="Your Changes" visible={displayDialog.data} style={{ width: '80vw' }} footer={footer("data")} onHide={() => setDisplayDialog((prev)=>{
+                return {...prev,data:false}
+            })}>
+                <div className="comparison-container">
+                {change?
+                    change.length>0?
+                        change.map((change)=>{
+                        return (
+                            <>
+                                <h5 className="comparison-heading">{change.name}</h5>
+                                <div className="comparison-parent">
+                                    <div className="comparison-left"><h6>{change.old}</h6></div>
+                                    <div className="comparison-right"><h6>{change.new}</h6></div>
+                                </div>
+                            </>);
+                        })
+                        :
+                        <h4>There are no changes</h4>
+                    :
+                    null
+                }
+                </div>
+            </Dialog>
+            <Dialog header="Your Changes" visible={displayDialog.profile} style={{ width: '80vw' }} footer={footer("profile")} onHide={() => setDisplayDialog((prev)=>{
+                return {...prev,profile:false}
+            })}>
+                <div className="comparison-container">
+                {change?
+                    change.length>0?
+                        change.map((change)=>{
+                        return (
+                            <>
+                                <h5 className="comparison-heading">{change.name}</h5>
+                                <div className="comparison-parent">
+                                    <div className="comparison-left"><img src={change.old} alt="old" className="comparison-img"/></div>
+                                    <div className="comparison-right"><img src={change.new} alt="new" className="comparison-img"/></div>
+                                </div>
+                            </>);
+                        })
+                        :
+                        <h4>There are no changes</h4>
+                    :
+                    null
+                }
+                </div>
+            </Dialog>
+            <Dialog header="Your Changes" visible={displayDialog.introVideo} style={{ width: '80vw' }} footer={footer("introVideo")} onHide={() => setDisplayDialog((prev)=>{
+                return {...prev,introVideo:false}
+            })}>
+                <div className="comparison-container">
+                {change?
+                    change.length>0?
+                        change.map((change)=>{
+                        if(change.type==="video"){
+                            console.log("Bitch");
+                            return <>
+                                <h5 className="comparison-heading">{change.name}</h5>
+                                <div className="comparison-parent">
+                                    <div className="comparison-left"><video src={change.old} className="comparison-video" controls/></div>
+                                    <div className="comparison-right"><video src={change.new} className="comparison-video"controls/></div>
+                                </div>
+                            </>
+                        }
+                        else{
+                            return  <>
+                                <h5 className="comparison-heading">{change.name}</h5>
+                                <div className="comparison-parent">
+                                    <div className="comparison-left"><img src={change.old} alt="old" className="comparison-img"/></div>
+                                    <div className="comparison-right"><img src={change.new} alt="new" className="comparison-img"/></div>
+                                </div>
+                            </>
+                        }
+                        
+                        })
+                        :
+                        <h4>There are no changes</h4>
+                    :
+                    null
+                }
+                </div>
+            </Dialog>
             {!loading.category && !loading.filter && !loading.keyword && !loading.guruObj ? 
             <>
                 <Banner title="Update Guru Profile"/>
@@ -442,7 +674,9 @@ function UpdateGuru() {
                         <Row>
                             <Col xs={12}>
                             <Form>
-                                <TabView>
+                                <TabView onTabChange={()=>{
+                                    setChange([]);
+                                }}>
                                     <TabPanel header="Data">
                                         <Row>
                                             <Col md={6}>
