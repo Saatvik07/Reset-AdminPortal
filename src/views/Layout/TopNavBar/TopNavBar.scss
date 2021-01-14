@@ -20,13 +20,15 @@
 	color: #151515 !important;
 	margin-bottom: 10px;
 }
-
+#navigation {
+	z-index: 1;
+}
 #topnav {
 	right: 0;
 	left: 0;
 	top: 0;
 	z-index: 1030;
-	background-color: transparent;
+	//background-color: transparent;
 	border: 0;
 	transition: all 0.5s ease;
 	.logo {
@@ -564,7 +566,7 @@
 
 @media (max-width: 991px) {
 	#topnav {
-		background-color: $black;
+		background-color: white;
 		box-shadow: $shadow;
 		min-height: 74px;
 		.logo {
@@ -691,9 +693,9 @@
 		height: auto;
 		padding-bottom: 0;
 		overflow: auto;
-		border-top: 1px solid darken($light, 2%);
-		border-bottom: 1px solid darken($light, 2%);
-		background-color: $black;
+		border-top: 2px solid darken($light, 2%);
+		border-bottom: 2px solid darken($light, 2%);
+		background-color: white;
 		&.open {
 			display: block;
 			overflow-y: auto;

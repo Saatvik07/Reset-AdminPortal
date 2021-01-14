@@ -65,7 +65,6 @@
 	border-radius: 200px;
 	border: 1px solid #191b1e;
 	transition: all 0.3s;
-	width: 7.5%;
 }
 .upload-btn:hover {
 	background-color: #fff;

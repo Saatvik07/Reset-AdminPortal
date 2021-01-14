@@ -26,7 +26,8 @@ function UpdateGuru() {
     const toast3 = useRef(null);
     const toast4 = useRef(null);
     const [name,setName] = useState({firstName:"",secondName:""});
-    const [id,setId] = useState("e7631a2a-8a3b-48cc-9b3f-5d224bae974a");
+    const [id,setId] = useState("");
+    const [activeIndex,setActiveIndex] = useState(0);
     const [email,setEmail] = useState("");
     const [bio,setBio] = useState("");
     const [profileString,setProfileString] = useState("");
@@ -128,12 +129,10 @@ function UpdateGuru() {
         else if(type===3){
             toast2.current.show({severity: 'success', summary: 'Success', detail: 'The intro video was uploaded'});
         }
-        else if(type===4){
-            toast4.current.show({severity: 'success', summary: 'Success', detail: `${name.firstName} ${name.secondName} was added successfully`});
-        }
     }
-    const fetchGuruData = ()=>{
-        fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}`).then(response=>{
+    const fetchGuruData = async ()=>{
+        const guruId = await query.get("id");
+        fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${guruId}`).then(response=>{
                 if(response.ok){
                     return response.json();
                 }
@@ -143,6 +142,7 @@ function UpdateGuru() {
             .then(result=>{
                 setGuruObj(result.body);
                 const guruObj = result.body;
+                console.log(guruObj);
                 setName({firstName:guruObj.firstName,secondName:guruObj.lastName});
                 setEmail(guruObj.email);
                 setBio(guruObj.bio);
@@ -156,18 +156,12 @@ function UpdateGuru() {
             })
     }
     useEffect(()=>{
-        //setId(query.get("id"));
+        setId(query.get("id"));
         fetchCategories();
         fetchFilters();
         fetchKeywords();
         fetchGuruData();
     },[])
-    const checkValidations = () =>{
-        if(name.firstName!==""&&name.secondName!==""&&email!==""&&bio!=="" && selectedCategory &&selectedCategory.length>0&&selectedFilter&&selectedFilter.length>0&&selectedKeyword&&selectedKeyword.length>0&&links.profile!==""&&links.thumbnail!==""&&links.video!==""){
-            return true;
-        }
-        return false;
-    }
     const itemTemplate = (option) => {
         if (option) {
             return (
@@ -344,51 +338,36 @@ function UpdateGuru() {
             reader.readAsDataURL(file);
         }
     }
-    const handleUpdate = ()=>{
+    const handleUpdate = (type)=>{
         if(change.length>0){
-
-        }
-        else{
-            toast3.current.show({severity: 'error', summary: 'No changes found', detail: 'Please make changes to the existing values to update them'});
-        }
-        const valid = checkValidations();
-        if(!valid){
-            
-        }
-        else{
-            let guruObj = {
-                profilePhoto:links.profile,
-                techniqueVideos:{
-                    videoID:1,
-                    videoList:[],
-                },
-                introVideo:{
-                    photo:links.thumbnail,
-                    video:links.video
-                },
-                bio:bio,
-                firstName:name.firstName,
-                lastName:name.secondName,
-                email:email,
-                addedBy:{
-                    id:'manual_entry_by_saatvik',
-                    name:{
-                        firstName:"Saatvik",
-                        secondName:"Bhatnagar"
-                    }
-                },
-                categories:selectedCategory,
-                filters: selectedFilter,
-                keywords:selectedKeyword,
+            let updateObj = {};
+            let introVideoObj ={};
+            change.forEach(changeObj=>{
+                if(changeObj.id==="categories")
+                    updateObj[`${changeObj.id}`] = selectedCategory;
+                else if (changeObj.id==="filters")
+                    updateObj[`${changeObj.id}`] = selectedFilter;
+                else if (changeObj.id==="keywords")
+                    updateObj[`${changeObj.id}`] = selectedKeyword;
+                else if (changeObj.id==="thumbnail")
+                    introVideoObj.photo = links.thumbnail;
+                else if (changeObj.id==="video")
+                    introVideoObj.video = links.video;
+                else
+                    updateObj[`${changeObj.id}`] = changeObj.new;
+            })
+            if(type==="intro"){
+                updateObj["introVideo"] = introVideoObj;
             }
+            console.log(updateObj);
             const fetchOptions = {
-                method: "POST",
+                method: "PUT",
                 headers:{
                     "Content-Type":"application/json"
                 },
-                body: JSON.stringify(guruObj),
+                body: JSON.stringify(updateObj),
             }
-            fetch("https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus",fetchOptions).then(response=>{
+            fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}`,fetchOptions).then(response=>{
                 if(response.ok){
                     return response.json();
                 }
@@ -397,7 +376,6 @@ function UpdateGuru() {
                 return jsonResponse;
             })
             .then(resObj=>{
-                onUploadComplete(4);
                 setName({firstName:"",secondName:""});
                 setEmail("");
                 setBio("");
@@ -424,19 +402,41 @@ function UpdateGuru() {
                     thumbnail:"",
                     video:"",
                 })
-                document.getElementById("guru-profile").value="";
-                document.getElementById("guru-intro-video").value="";
-                document.getElementById("guru-intro-thumbnail").value="";
+                try{
+                    document.getElementById("guru-profile").value="";
+                }
+                catch(e){
+
+                }
+                try{
+                    document.getElementById("guru-intro-video").value="";
+                }
+                catch(e){
+
+                }
+                try{
+                    document.getElementById("guru-intro-thumbnail").value="";
+                }
+                catch(e){
+
+                }
+                
+                setActiveIndex(0);
+                fetchGuruData();
+                toast4.current.show({severity: 'success', summary: 'Update Successfully', detail: `${guruObj.firstName} ${guruObj.lastName}'s profile was updated successfully`});
             })
+        }
+        else{
+            toast3.current.show({severity: 'error', summary: 'No changes found', detail: 'Please make changes to the existing values to update them'});
         }
     }
     const handleUpdateData = (event)=>{
         event.preventDefault();
         const changeArray=[];
         if(!(guruObj.firstName===name.firstName)){
-            console.log("Blahhh");
             changeArray.push({
                 name:"First Name",
+                id:"firstName",
                 new:name.firstName,
                 old:guruObj.firstName,
             })
@@ -445,6 +445,7 @@ function UpdateGuru() {
         if(!(guruObj.lastName===name.secondName)){
             changeArray.push({
                 name:"Last Name",
+                id:"lastName",
                 new:name.secondName,
                 old:guruObj.lastName,
             })
@@ -452,8 +453,17 @@ function UpdateGuru() {
         if(!(guruObj.email===email)){
             changeArray.push({
                 name:"Email ID",
+                id:"email",
                 new:email,
                 old:guruObj.email,
+            })
+        }
+        if(!(guruObj.bio===bio)){
+            changeArray.push({
+                name:"Bio",
+                id:"bio",
+                new:bio,
+                old:guruObj.bio,
             })
         }
         let oldCategories = "";
@@ -467,25 +477,27 @@ function UpdateGuru() {
         if(!(newCategories===oldCategories)){
             changeArray.push({
                 name:"Categories",
+                id:"categories",
                 new:newCategories,
                 old:oldCategories,
             })
         }
-        // let oldFilters = "";
-        // guruObj.filters.forEach(filter=>{
-        //     oldFilters+=(filter.name+", ");
-        // })
-        // let newFilters ="";
-        // selectedFilter.forEach(filter=>{
-        //     newFilters+=(filter.name+", ");
-        // })
-        // if(!(newFilters===oldFilters)){
-        //     changeArray.push({
-        //         name:"Filters",
-        //         new:newFilters,
-        //         old:oldFilters,
-        //     })
-        // }
+        let oldFilters = "";
+        guruObj.filters.forEach(filter=>{
+            oldFilters+=(filter.name+", ");
+        })
+        let newFilters ="";
+        selectedFilter.forEach(filter=>{
+            newFilters+=(filter.name+", ");
+        })
+        if(!(newFilters===oldFilters)){
+            changeArray.push({
+                name:"Filters",
+                id:"filters", 
+                new:newFilters,
+                old:oldFilters,
+            })
+        }
         let oldKeywords = "";
         guruObj.keywords.forEach(keyword=>{
             oldKeywords+=(keyword.name+", ");
@@ -497,6 +509,7 @@ function UpdateGuru() {
         if(!(newKeywords===oldKeywords)){
             changeArray.push({
                 name:"Keywords",
+                id:"keywords",
                 new:newKeywords,
                 old:oldKeywords,
             })
@@ -510,18 +523,19 @@ function UpdateGuru() {
     const handleUpdateProfile = (event)=>{
         event.preventDefault();
         const changeArray = [];
-        // if(links.profile!==""){
-        //     changeArray.push({
-        //         name:"Profile",
-        //         old:guruObj.profilePhoto,
-        //         new:links.profile,
-        //     })
-        // }
-        changeArray.push({
-            name:"Profile Picture",
-            old:guruObj.profilePhoto,
-            new:guruObj.profilePhoto,
-        })
+        if(links.profile!==""){
+            changeArray.push({
+                name:"Profile",
+                old:guruObj.profilePhoto,
+                new:links.profile,
+            })
+        }
+        // changeArray.push({
+        //     name:"Profile Picture",
+        //     id:"profilePhoto",
+        //     old:guruObj.profilePhoto,
+        //     new:guruObj.profilePhoto,
+        // })
         setChange(changeArray);
         setDisplayDialog((prev)=>{
             return {
@@ -533,32 +547,34 @@ function UpdateGuru() {
     const handleUpdateIntro = (event) =>{
         event.preventDefault();
         const changeArray=[];
-        // if(links.thumbnail!==""){
-        //     changeArray.push({
-        //         name:"Intro Video Thumbnail",
-        //         old:guruObj.introVideo.photo,
-        //         new:links.thumbnail,
-        //     })
-        // }
-        // if(links.video!==""){
-        //     changeArray.push({
-        //         name:"Intro Video",
-        //         old:guruObj.introVideo.video,
-        //         new:links.video,
-        //     })
-        // }
-        changeArray.push({
-            name:"Intro Video Thumbnail",
-            type:"thumbnail",
-            old:guruObj.introVideo.photo,
-            new:guruObj.introVideo.photo,
-        })
-        changeArray.push({
-            name:"Intro Video",
-            type:"video",
-            old:guruObj.introVideo.video,
-            new:guruObj.introVideo.video,
-        })
+        if(links.thumbnail!==""){
+            changeArray.push({
+                name:"Intro Video Thumbnail",
+                old:guruObj.introVideo.photo,
+                new:links.thumbnail,
+            })
+        }
+        if(links.video!==""){
+            changeArray.push({
+                name:"Intro Video",
+                old:guruObj.introVideo.video,
+                new:links.video,
+            })
+        }
+        // changeArray.push({
+        //     name:"Intro Video Thumbnail",
+        //     type:"thumbnail",
+        //     id:"thumbnail",
+        //     old:guruObj.introVideo.photo,
+        //     new:guruObj.introVideo.photo,
+        // })
+        // changeArray.push({
+        //     name:"Intro Video",
+        //     type:"video",
+        //     id:"video",
+        //     old:guruObj.introVideo.video,
+        //     new:guruObj.introVideo.video,
+        // })
         setChange(changeArray);
         setDisplayDialog((prev)=>{
             return {
@@ -574,7 +590,7 @@ function UpdateGuru() {
                 obj[`${type}`]=false;
                 return obj
             })} className="cancel-btn" />
-            <Button label="Update" icon="pi pi-check" onClick={() => {}} autoFocus className="update-confirm-btn" />
+            <Button label="Update" icon="pi pi-check" onClick={()=>{handleUpdate(type)}} autoFocus className="update-confirm-btn" />
         </div>);
     }
     return (
@@ -583,7 +599,8 @@ function UpdateGuru() {
             <Toast ref={toast1} position="bottom-right"></Toast>
             <Toast ref={toast2} position="bottom-right"></Toast>
             <Toast ref={toast3} position="bottom-right"></Toast>
-            <Dialog header="Your Changes" visible={displayDialog.data} style={{ width: '80vw' }} footer={footer("data")} onHide={() => setDisplayDialog((prev)=>{
+            <Toast ref={toast4} position="bottom-right"></Toast>
+            <Dialog header="Your Changes" visible={displayDialog.data} style={{ width: '80vw' }} footer={footer()} onHide={() => setDisplayDialog((prev)=>{
                 return {...prev,data:false}
             })}>
                 <div className="comparison-container">
@@ -606,7 +623,7 @@ function UpdateGuru() {
                 }
                 </div>
             </Dialog>
-            <Dialog header="Your Changes" visible={displayDialog.profile} style={{ width: '80vw' }} footer={footer("profile")} onHide={() => setDisplayDialog((prev)=>{
+            <Dialog header="Your Changes" visible={displayDialog.profile} style={{ width: '80vw' }} footer={footer()} onHide={() => setDisplayDialog((prev)=>{
                 return {...prev,profile:false}
             })}>
                 <div className="comparison-container">
@@ -629,7 +646,7 @@ function UpdateGuru() {
                 }
                 </div>
             </Dialog>
-            <Dialog header="Your Changes" visible={displayDialog.introVideo} style={{ width: '80vw' }} footer={footer("introVideo")} onHide={() => setDisplayDialog((prev)=>{
+            <Dialog header="Your Changes" visible={displayDialog.introVideo} style={{ width: '80vw' }} footer={footer("intro")} onHide={() => setDisplayDialog((prev)=>{
                 return {...prev,introVideo:false}
             })}>
                 <div className="comparison-container">
@@ -637,7 +654,7 @@ function UpdateGuru() {
                     change.length>0?
                         change.map((change)=>{
                         if(change.type==="video"){
-                            console.log("Bitch");
+                            
                             return <>
                                 <h5 className="comparison-heading">{change.name}</h5>
                                 <div className="comparison-parent">
@@ -674,8 +691,9 @@ function UpdateGuru() {
                         <Row>
                             <Col xs={12}>
                             <Form>
-                                <TabView onTabChange={()=>{
+                                <TabView activeIndex={activeIndex} onTabChange={(event)=>{
                                     setChange([]);
+                                    setActiveIndex(event.index);
                                 }}>
                                     <TabPanel header="Data">
                                         <Row>

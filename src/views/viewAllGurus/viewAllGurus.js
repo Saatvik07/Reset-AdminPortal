@@ -120,19 +120,19 @@ export default class viewAllGurus extends React.Component {
                       </p>
                       <div className="btn-container">
                         <Link
-                            to={`/update-guru?id=${guru.id}`}
+                            to={`/update-guru?id=8a53a481-b8c6-4481-8dc9-92e177c1272c`}
                             className="view-profile-btn"
                         >
                             <FeatherIcon icon="user-plus" />
                         </Link>
                         <Link
-                            to={`/add-availability?id=${guru.id}`}
+                            to={`/add-availability?id=8a53a481-b8c6-4481-8dc9-92e177c1272c`}
                             className="view-profile-btn"
                         >
                             <FeatherIcon icon="calendar"/>
                         </Link>
                         <Link
-                            to={`/add-new-video?id=${guru.id}`}
+                            to={`/add-new-video?id=8a53a481-b8c6-4481-8dc9-92e177c1272c`}
                             className="view-profile-btn"
                         >
                             <FeatherIcon icon="video"/>

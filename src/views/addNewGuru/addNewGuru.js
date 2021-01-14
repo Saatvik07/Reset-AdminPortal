@@ -20,7 +20,7 @@ function AddNewGuru() {
     const toast2 = useRef(null);
     const toast3 = useRef(null);
     const toast4 = useRef(null);
-    const [name,setName] = useState({firstName:"",secondName:""});
+    const [name,setName] = useState({firstName:"",lastName:""});
     const [email,setEmail] = useState("");
     const [bio,setBio] = useState("");
     const [profileString,setProfileString] = useState("");
@@ -248,7 +248,7 @@ function AddNewGuru() {
                 return {...prev,video:resObj.uploadURL.split("?")[0]}
             })
             onUploadComplete(3);
-        
+            
         }).catch(err=>{
             console.log(err);
         });
@@ -314,6 +314,9 @@ function AddNewGuru() {
             toast3.current.show({severity: 'error', summary: 'All fields are mandatory', detail: 'Please check that all fields are completely filled'});
         }
         else{
+            setUploading((prev)=>{
+                return {...prev,whole:true}
+            })
             let guruObj = {
                 profilePhoto:links.profile,
                 techniqueVideos:{
@@ -339,6 +342,7 @@ function AddNewGuru() {
                 filters: selectedFilter,
                 keywords:selectedKeyword,
             }
+            console.log(guruObj);
             const fetchOptions = {
                 method: "POST",
                 headers:{
@@ -356,7 +360,7 @@ function AddNewGuru() {
             })
             .then(resObj=>{
                 onUploadComplete(4);
-                setName({firstName:"",secondName:""});
+                setName({firstName:"",lastName:""});
                 setEmail("");
                 setBio("");
                 setSelectedCategory(null);
@@ -385,6 +389,9 @@ function AddNewGuru() {
                 document.getElementById("guru-profile").value="";
                 document.getElementById("guru-intro-video").value="";
                 document.getElementById("guru-intro-thumbnail").value="";
+                setUploading((prev)=>{
+                    return {...prev,whole:false}
+                })
             })
         }
 
@@ -395,6 +402,7 @@ function AddNewGuru() {
             <Toast ref={toast1} position="bottom-right"></Toast>
             <Toast ref={toast2} position="bottom-right"></Toast>
             <Toast ref={toast3} position="bottom-right"></Toast>
+            <Toast ref={toast4} position="bottom-right"></Toast>
             {!loading.category && !loading.filter && !loading.keyword ? 
             <>
                 <Banner title="Add New Guru"/>
@@ -629,14 +637,18 @@ function AddNewGuru() {
                                 </Row>
                                 <Row>
                                 <Col sm={12}>
-                                    <input
-                                    type="submit"
-                                    id="submit"
-                                    name="send"
-                                    className="touch-btn"
-                                    value="Add"
-                                    onClick={handleAdd}
-                                    />
+                                    {uploading.whole?
+                                        <Spinner color="#ff5001"></Spinner>
+                                        :
+                                        <input
+                                        type="submit"
+                                        id="submit"
+                                        name="send"
+                                        className="touch-btn"
+                                        value="Add"
+                                        onClick={handleAdd}
+                                        />
+                                    }
                                 </Col>
                                 </Row>
                             </Form>
