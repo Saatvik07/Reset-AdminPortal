@@ -131,6 +131,9 @@ function UpdateGuru() {
         }
     }
     const fetchGuruData = async ()=>{
+        setLoading((prev)=>{
+            return {...prev,guruObj:true}
+        })
         const guruId = await query.get("id");
         fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${guruId}`).then(response=>{
                 if(response.ok){
@@ -146,7 +149,7 @@ function UpdateGuru() {
                 setName({firstName:guruObj.firstName,secondName:guruObj.lastName});
                 setEmail(guruObj.email);
                 setBio(guruObj.bio);
-                setLinks({profile:guruObj.profilePhoto,thumbnail:guruObj.introVideo.photo,video:guruObj.introVideo.video});
+                //setLinks({profile:guruObj.profilePhoto,thumbnail:guruObj.introVideo.photo,video:guruObj.introVideo.video});
                 setSelectedCategory(guruObj.categories);
                 setSelectedKeyword(guruObj.keywords);
                 setSelectedFilter(guruObj.filters);
@@ -179,7 +182,7 @@ function UpdateGuru() {
         const guruName=name.firstName+" "+name.secondName;
         const fetchOptions = {
             method: "POST",
-            body: JSON.stringify({guruName:guruName,type:"profile"}),
+            body: JSON.stringify({guruName:guruName,type:"profile",timeStamp:~~(+new Date() / 1000)}),
         };
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
             if(response.ok){
@@ -216,7 +219,7 @@ function UpdateGuru() {
         const guruName=name.firstName+" "+name.secondName;
         const fetchOptions = {
 			method: "POST",
-			body: JSON.stringify({guruName:guruName,type:"thumbnail"}),
+			body: JSON.stringify({guruName:guruName,type:"thumbnail",timeStamp:~~(+new Date() / 1000)}),
 		};
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
             if(response.ok){
@@ -254,7 +257,7 @@ function UpdateGuru() {
         const guruName=name.firstName+" "+name.secondName;
         const fetchOptions = {
             method: "POST",
-            body: JSON.stringify({guruName:guruName,videoID:videoID,type:"intro"}),
+            body: JSON.stringify({guruName:guruName,videoID:videoID,type:"intro",timeStamp:~~(+new Date() / 1000)}),
         };
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadVideo",fetchOptions).then(response=>{
         if(response.ok){
@@ -270,7 +273,7 @@ function UpdateGuru() {
             for(let i=0;i<binary.length;i++){
                 blobArray.push(binary.charCodeAt(i))
             }
-            let blobData = new Blob([new Uint8Array(blobArray)],{type:'image/jpeg'});
+            let blobData = new Blob([new Uint8Array(blobArray)],{type:'video/mp4'});
             const result = await fetch(resObj.uploadURL,{method:"PUT",body:blobData});
             setUploading((prev)=>{
                 return {...prev,video:false}
@@ -341,7 +344,7 @@ function UpdateGuru() {
     const handleUpdate = (type)=>{
         if(change.length>0){
             let updateObj = {};
-            let introVideoObj ={};
+            let introVideoObj ={...guruObj.introVideo};
             change.forEach(changeObj=>{
                 if(changeObj.id==="categories")
                     updateObj[`${changeObj.id}`] = selectedCategory;
@@ -420,8 +423,12 @@ function UpdateGuru() {
                 catch(e){
 
                 }
-                
                 setActiveIndex(0);
+                setDisplayDialog({
+                    profile:false,
+                    data:false,
+                    introVideo:false,
+                })
                 fetchGuruData();
                 toast4.current.show({severity: 'success', summary: 'Update Successfully', detail: `${guruObj.firstName} ${guruObj.lastName}'s profile was updated successfully`});
             })
@@ -525,6 +532,7 @@ function UpdateGuru() {
         const changeArray = [];
         if(links.profile!==""){
             changeArray.push({
+                id:"profilePhoto",
                 name:"Profile",
                 old:guruObj.profilePhoto,
                 new:links.profile,
@@ -549,6 +557,7 @@ function UpdateGuru() {
         const changeArray=[];
         if(links.thumbnail!==""){
             changeArray.push({
+                id:"thumbnail",
                 name:"Intro Video Thumbnail",
                 old:guruObj.introVideo.photo,
                 new:links.thumbnail,
@@ -557,6 +566,7 @@ function UpdateGuru() {
         if(links.video!==""){
             changeArray.push({
                 name:"Intro Video",
+                id:"video",
                 old:guruObj.introVideo.video,
                 new:links.video,
             })
@@ -600,7 +610,7 @@ function UpdateGuru() {
             <Toast ref={toast2} position="bottom-right"></Toast>
             <Toast ref={toast3} position="bottom-right"></Toast>
             <Toast ref={toast4} position="bottom-right"></Toast>
-            <Dialog header="Your Changes" visible={displayDialog.data} style={{ width: '80vw' }} footer={footer()} onHide={() => setDisplayDialog((prev)=>{
+            <Dialog header="Your Changes" visible={displayDialog.data} style={{ width: '80vw' }} footer={footer("profile")} onHide={() => setDisplayDialog((prev)=>{
                 return {...prev,data:false}
             })}>
                 <div className="comparison-container">
@@ -623,7 +633,7 @@ function UpdateGuru() {
                 }
                 </div>
             </Dialog>
-            <Dialog header="Your Changes" visible={displayDialog.profile} style={{ width: '80vw' }} footer={footer()} onHide={() => setDisplayDialog((prev)=>{
+            <Dialog header="Your Changes" visible={displayDialog.profile} style={{ width: '80vw' }} footer={footer("data")} onHide={() => setDisplayDialog((prev)=>{
                 return {...prev,profile:false}
             })}>
                 <div className="comparison-container">
@@ -653,7 +663,7 @@ function UpdateGuru() {
                 {change?
                     change.length>0?
                         change.map((change)=>{
-                        if(change.type==="video"){
+                        if(change.id==="video"){
                             
                             return <>
                                 <h5 className="comparison-heading">{change.name}</h5>
@@ -846,7 +856,7 @@ function UpdateGuru() {
                                             <Col md={12}>
                                                 <FormGroup className="upload-container">
                                                     <div className="current-profile-container">
-                                                        <img src={links.profile} className="current-profile-img" alt="current-profile"/>
+                                                        <img src={guruObj.profilePhoto} className="current-profile-img" alt="current-profile"/>
                                                     </div>
                                                     <Label>
                                                         Upload new Profile Photo
@@ -893,7 +903,7 @@ function UpdateGuru() {
                                             <Col md={12}>
                                                 <FormGroup className="upload-container">
                                                     <div className="current-profile-container">
-                                                        <img src={links.thumbnail} className="current-profile-img" alt="current-profile"/>
+                                                        <img src={guruObj.introVideo.photo} className="current-profile-img" alt="current-profile"/>
                                                     </div>
                                                     <Label>
                                                         Update Intro Video Thumbnail
@@ -926,7 +936,7 @@ function UpdateGuru() {
                                             <Col md={12}>
                                                 <FormGroup className="upload-container">
                                                 <div className="current-profile-container">
-                                                        <video src={links.video} className="current-profile-img" controls/>
+                                                        <video src={guruObj.introVideo.video} className="current-profile-img" controls/>
                                                     </div>
                                                     <Label>
                                                         Update Intro Video

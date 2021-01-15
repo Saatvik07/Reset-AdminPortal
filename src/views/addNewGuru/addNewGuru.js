@@ -116,7 +116,7 @@ function AddNewGuru() {
             toast2.current.show({severity: 'success', summary: 'Success', detail: 'The intro video was uploaded'});
         }
         else if(type===4){
-            toast4.current.show({severity: 'success', summary: 'Success', detail: `${name.firstName} ${name.secondName} was added successfully`});
+            toast4.current.show({severity: 'success', summary: 'Success', detail: `${name.firstName} ${name.lastName} was added successfully`});
         }
     }
     
@@ -126,7 +126,7 @@ function AddNewGuru() {
         fetchKeywords();
     },[])
     const checkValidations = () =>{
-        if(name.firstName!==""&&name.secondName!==""&&email!==""&&bio!=="" && selectedCategory &&selectedCategory.length>0&&selectedFilter&&selectedFilter.length>0&&selectedKeyword&&selectedKeyword.length>0&&links.profile!==""&&links.thumbnail!==""&&links.video!==""){
+        if(name.firstName!==""&&name.lastName!==""&&email!==""&&bio!=="" && selectedCategory &&selectedCategory.length>0&&selectedFilter&&selectedFilter.length>0&&selectedKeyword&&selectedKeyword.length>0&&links.profile!==""&&links.thumbnail!==""&&links.video!==""){
             return true;
         }
         return false;
@@ -145,10 +145,10 @@ function AddNewGuru() {
         setUploading((prev)=>{
             return {...prev,profile:true}
         })
-        const guruName=name.firstName+" "+name.secondName;
+        const guruName=name.firstName+" "+name.lastName;
         const fetchOptions = {
             method: "POST",
-            body: JSON.stringify({guruName:guruName,type:"profile"}),
+            body: JSON.stringify({guruName:guruName,type:"profile",timeStamp:~~(+new Date() / 1000)}),
         };
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
             if(response.ok){
@@ -182,10 +182,10 @@ function AddNewGuru() {
         setUploading((prev)=>{
             return {...prev,thumbnail:true}
         })
-        const guruName=name.firstName+" "+name.secondName;
+        const guruName=name.firstName+" "+name.lastName;
         const fetchOptions = {
 			method: "POST",
-			body: JSON.stringify({guruName:guruName,type:"thumbnail"}),
+			body: JSON.stringify({guruName:guruName,type:"thumbnail",timeStamp:~~(+new Date() / 1000)}),
 		};
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
             if(response.ok){
@@ -220,10 +220,10 @@ function AddNewGuru() {
             return {...prev,video:true}
         })
         const videoID = parseInt(Math.random() * 10000000);
-        const guruName=name.firstName+" "+name.secondName;
+        const guruName=name.firstName+" "+name.lastName;
         const fetchOptions = {
             method: "POST",
-            body: JSON.stringify({guruName:guruName,videoID:videoID,type:"intro"}),
+            body: JSON.stringify({guruName:guruName,videoID:videoID,type:"intro",timeStamp:~~(+new Date() / 1000)}),
         };
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadVideo",fetchOptions).then(response=>{
         if(response.ok){
@@ -239,7 +239,7 @@ function AddNewGuru() {
             for(let i=0;i<binary.length;i++){
                 blobArray.push(binary.charCodeAt(i))
             }
-            let blobData = new Blob([new Uint8Array(blobArray)],{type:'image/jpeg'});
+            let blobData = new Blob([new Uint8Array(blobArray)],{type:'video/mp4'});
             const result = await fetch(resObj.uploadURL,{method:"PUT",body:blobData});
             setUploading((prev)=>{
                 return {...prev,video:false}
@@ -329,7 +329,7 @@ function AddNewGuru() {
                 },
                 bio:bio,
                 firstName:name.firstName,
-                lastName:name.secondName,
+                lastName:name.lastName,
                 email:email,
                 addedBy:{
                     id:'manual_entry_by_saatvik',
@@ -454,7 +454,7 @@ function AddNewGuru() {
                                         value={name.lastName}
                                         onChange={(event)=>{
                                             setName((prev)=>{
-                                                return {...prev,secondName:event.target.value}
+                                                return {...prev,lastName:event.target.value}
                                             })
                                         }}
                                     />

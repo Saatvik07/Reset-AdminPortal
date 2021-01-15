@@ -25,6 +25,7 @@ function AddNewVideo() {
     const toast = useRef(null);
     const toast1 = useRef(null);
     const toast2 = useRef(null);
+    const toast3 = useRef(null);
     const [guruObj,setGuruObj] = useState(null);
     const [duration,setDuration] = useState(2);
     const [id,setId] = useState("e7631a2a-8a3b-48cc-9b3f-5d224bae974a");
@@ -48,79 +49,22 @@ function AddNewVideo() {
     });
     const [loading,setLoading] = useState(true);
     const [uploading,setUploading] = useState({profile:false,thumbnail:false,video:false,whole:false});
-    const fetchGuru = ()=>{
+    const fetchGuru = async()=>{
         setLoading(true);
-        setGuruObj({
-            "guruID": "e7631a2a-8a3b-48cc-9b3f-5d224bae974a",
-            "firstName": "Jon",
-            "lastName": "Aronoff",
-            "profilePhoto": "https://resetmsm-gurus.s3.us-east-2.amazonaws.com/photos/jon.jpg",
-            "bio": "Jonathan Aronoff is an Internationally Certified Coach, a licensed psychologist, and a psychoanalyst. After 30 years of playing and coaching competitive soccer he discovered his own unique style of integrating his passion for athleticism and team spirit into his psychotherapy and well-being coaching practice. The majority of his coaching practice focuses on people who struggle with the transformation into becoming productive, successful leaders. Using his fundamental principles of self-discovery and accountability, he assists young people to become confident and competent leaders, and has integrated those models and concepts into his executive and personal well-being coaching.",
-            "categories": [
-                {
-                    "name": "Life Coach",
-                    "id": 2715375237
-                }
-            ],
-            "keywords": [
-                {
-                    "name": "Life Coach",
-                    "id": 2715375237
-                },
-                {
-                    "name": "Wellbeing Coach",
-                    "id": 2715375237
-                },
-                {
-                    "name": "Motivation",
-                    "id": 2715375237
-                },
-                {
-                    "name": "Mindfulness",
-                    "id": 2715375237
-                }
-            ],
-            "techniqueVideos": {
-                videoID:3,
-                videoList:[
-                    {
-                        "photo": "https://resetmsm-gurus.s3.us-east-2.amazonaws.com/videos/jon_change_video_pic.jpg",
-                        "video": "https://resetmsm-gurus.s3.us-east-2.amazonaws.com/videos/jon_change.mp4",
-                        "title":"How to be calm",
-                        "duration":2,
-                    },
-                    {
-                        "photo": "https://resetmsm-gurus.s3.us-east-2.amazonaws.com/videos/jon_change_video_pic.jpg",
-                        "video": "https://resetmsm-gurus.s3.us-east-2.amazonaws.com/videos/jon_change.mp4",
-                        "title":"How to be calm",
-                        "duration":2,
-                    }
-                ]
+        const guruId = await query.get("id");
+        fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${guruId}`).then(response=>{
+            if(response.ok){
+                return response.json();
             }
-            ,
-            "introVideo": {
-                "photo": "https://resetmsm-gurus.s3.us-east-2.amazonaws.com/photos/jon.jpg",
-                "video": "https://resetmsm-gurus.s3.us-east-2.amazonaws.com/videos/jon_intro.mp4"
-            }
-        });
-        setTimeout(()=>{
+        }).then(jsonResponse=>{
+            return jsonResponse;
+        })
+        .then(result=>{
+            setGuruObj(result.body);
             setLoading(false);
-        },2000)
-        // setLoading(true);
-        // setId(query.get("id"));
-        // fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}`).then(response=>{
-        //     if(response.ok){
-        //         return response.json();
-        //     }
-        // }).then(jsonResponse=>{
-        //     return jsonResponse;
-        // })
-        // .then(result=>{
-        //     setGuruObj(result.body);
-        //     setLoading(false);
-        // }).catch(error=>{
-        //     console.log(error);
-        // });
+        }).catch(error=>{
+            console.log(error);
+        });
     }
     useEffect(()=>{
         fetchGuru();
@@ -131,6 +75,9 @@ function AddNewVideo() {
         }
         else if(type===2){
             toast1.current.show({severity: 'success', summary: 'Success', detail: 'The intro video thumbnail was uploaded'});
+        }
+        else if (type===3){
+            toast3.current.show({severity: 'success', summary: 'Success', detail: 'The video was added successfully'})
         }
     }
     const checkValidations = () =>{
@@ -144,9 +91,10 @@ function AddNewVideo() {
             return {...prev,thumbnail:true}
         })
         const guruName = guruObj.firstName+" "+guruObj.lastName;
+        const guruId = query.get("id");
         const fetchOptions = {
 			method: "POST",
-			body: JSON.stringify({guruName:guruName,guruID:id,videoID:guruObj.techniqueVideos.videoID,type:"thumbnail"}),
+			body: JSON.stringify({guruName:guruName,guruID:guruId,videoID:guruObj.techniqueVideos.videoID,type:"thumbnail",timeStamp:~~(+new Date() / 1000)}),
 		};
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadProfile",fetchOptions).then(response=>{
             if(response.ok){
@@ -181,14 +129,16 @@ function AddNewVideo() {
             return {...prev,video:true}
         })
         const guruName=guruObj.firstName+" "+guruObj.lastName;
+        const guruId = query.get("id");
+        console.log(guruId);
         const fetchOptions = {
             method: "POST",
-            body: JSON.stringify({guruName:guruName,guruID:id,videoID:guruObj.techniqueVideos.videoID,type:"normal"}),
+            body: JSON.stringify({guruName:guruName,guruID:guruId,videoID:guruObj.techniqueVideos.videoID,type:"normal",timeStamp:~~(+new Date() / 1000)}),
         };
         fetch("https://5hsr4euhfe.execute-api.us-east-2.amazonaws.com/dev/uploadVideo",fetchOptions).then(response=>{
-        if(response.ok){
-            return response.json();
-        }
+            if(response.ok){
+                return response.json();
+            }
         })
         .then(jsonResponse=>{
             return jsonResponse;
@@ -199,7 +149,7 @@ function AddNewVideo() {
             for(let i=0;i<binary.length;i++){
                 blobArray.push(binary.charCodeAt(i))
             }
-            let blobData = new Blob([new Uint8Array(blobArray)],{type:'image/jpeg'});
+            let blobData = new Blob([new Uint8Array(blobArray)],{type:'video/mp4'});
             const result = await fetch(resObj.uploadURL,{method:"PUT",body:blobData});
             setUploading((prev)=>{
                 return {...prev,video:false}
@@ -207,6 +157,7 @@ function AddNewVideo() {
             setLinks((prev)=>{
                 return {...prev,video:resObj.uploadURL.split("?")[0]}
             })
+            console.log(resObj.uploadURL.split("?")[0]);
             onUploadComplete(1);
         
         }).catch(err=>{
@@ -249,13 +200,17 @@ function AddNewVideo() {
             reader.readAsDataURL(file);
         }
     }
-    const handleAdd = (event)=>{
+    const handleAdd = async(event)=>{
         event.preventDefault();
+        
         const valid = checkValidations();
         if(!valid){
             toast2.current.show({severity: 'error', summary: 'All fields are mandatory', detail: 'Please check that all fields are completely filled'});
         }
         else{
+            setUploading((prev)=>{
+                return {...prev,whole:true}
+            })
             const videoList = guruObj.techniqueVideos.videoList;
             let videoObj = {
                 title:title,
@@ -269,12 +224,13 @@ function AddNewVideo() {
                 headers:{
                 "Content-Type":"application/json"
                 },
-                body: JSON.stringify({"techniqueVideos":{
+                body: JSON.stringify({techniqueVideos:{
                     videoID:guruObj.techniqueVideos.videoID+1,
                     videoList:videoList
                 }}),
             }
-            fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}`,fetchOptions).then(response=>{
+            const guruId = await query.get("id");
+            fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${guruId}`,fetchOptions).then(response=>{
                 if(response.ok){
                     return response.json();
                 }
@@ -301,6 +257,11 @@ function AddNewVideo() {
                 })
                 document.getElementById("guru-intro-video").value="";
                 document.getElementById("guru-intro-thumbnail").value="";
+                setUploading((prev)=>{
+                    return {...prev,whole:false}
+                })
+                window.scroll({top: 0, left: 0, behavior: 'smooth' });
+                onUploadComplete(3);
             })
 
         }
@@ -310,6 +271,8 @@ function AddNewVideo() {
         <div>
             <Toast ref={toast} position="bottom-right"></Toast>
             <Toast ref={toast1} position="bottom-right"></Toast>
+            <Toast ref={toast2} position="bottom-right"></Toast>
+            <Toast ref={toast2} position="bottom-right"></Toast>
             {!loading ? 
             <>
                 <TabView activeIndex={activeIndex} onTabChange={(e)=>{
@@ -427,14 +390,19 @@ function AddNewVideo() {
                                         </Row>
                                         <Row>
                                         <Col sm={12}>
-                                            <input
-                                            type="submit"
-                                            id="submit"
-                                            name="send"
-                                            className="touch-btn"
-                                            value="Add"
-                                            onClick={handleAdd}
-                                            />
+                                            {uploading.whole?
+                                                <Spinner color="#ff5001"></Spinner>
+                                                :
+                                                <input
+                                                type="submit"
+                                                id="submit"
+                                                name="send"
+                                                className="touch-btn"
+                                                value="Add"
+                                                onClick={handleAdd}
+                                                />
+                                            }
+                                            
                                         </Col>
                                         </Row>
                                     </Form>
@@ -456,7 +424,7 @@ function AddNewVideo() {
                                         <Row className="align-items-center no-gutters">
                                             <Col md={6}>
                                             <img
-                                                src={video.photo}
+                                                src={video.thumbnail}
                                                 className="img-fluid"
                                                 alt="thumbnail"
                                             />
@@ -543,7 +511,7 @@ function AddNewVideo() {
                                             </Col>
                                             <Col md={{ size: 6, order: 2 }} xs={{ order: 1 }}>
                                             <img
-                                                src={video.photo}
+                                                src={video.thumbnail}
                                                 className="img-fluid"
                                                 alt="thumbnail"
                                             />
