@@ -20,12 +20,15 @@ import FeatherIcon from 'feather-icons-react';
 import Banner from '../Layout/Banner/Banner';
 import "../addNewGuru/style.css";
 import "./style.css";
+import {useSelector} from "react-redux"
+import Unauthorized from '../Unauthorized/Unauthorized';
 function AddNewVideo() {
     const query = new URLSearchParams(useLocation().search);
     const toast = useRef(null);
     const toast1 = useRef(null);
     const toast2 = useRef(null);
     const toast3 = useRef(null);
+    const auth = useSelector(state => state.auth)
     const [guruObj,setGuruObj] = useState(null);
     const [duration,setDuration] = useState(2);
     const [id,setId] = useState("e7631a2a-8a3b-48cc-9b3f-5d224bae974a");
@@ -273,274 +276,277 @@ function AddNewVideo() {
             <Toast ref={toast1} position="bottom-right"></Toast>
             <Toast ref={toast2} position="bottom-right"></Toast>
             <Toast ref={toast2} position="bottom-right"></Toast>
-            {!loading ? 
-            <>
-                <TabView activeIndex={activeIndex} onTabChange={(e)=>{
-                    if(e.index===1){
-                        fetchGuru();
-                    }
-                    setActiveIndex(e.index);
-                }}>
-                    <TabPanel header="Add Video">
-                        <Banner title="Add New Video"/>
-                        <Container>
-                            <Row className="justify-content-center">
-                            <Col lg={10} xs={12}>
-                                <div className="rounded p-4 shadow">
-                                <Row>
-                                    <Col xs={12}>
-                                    <Form>
-                                        <Row>
-                                            <Col md={6}>
-                                                <FormGroup>
-                                                <Label>
-                                                    Video title <span className="text-danger">*</span>
-                                                </Label>
-                                                <div className="position-relative">
-                                                    <i>
-                                                    <FeatherIcon
-                                                        icon="user"
-                                                        className="fea icon-sm icons"
+            {auth.user&&auth.idToken?
+                !loading ? 
+                <>
+                    <TabView activeIndex={activeIndex} onTabChange={(e)=>{
+                        if(e.index===1){
+                            fetchGuru();
+                        }
+                        setActiveIndex(e.index);
+                    }}>
+                        <TabPanel header="Add Video">
+                            <Banner title="Add New Video"/>
+                            <Container>
+                                <Row className="justify-content-center">
+                                <Col lg={10} xs={12}>
+                                    <div className="rounded p-4 shadow">
+                                    <Row>
+                                        <Col xs={12}>
+                                        <Form>
+                                            <Row>
+                                                <Col md={6}>
+                                                    <FormGroup>
+                                                    <Label>
+                                                        Video title <span className="text-danger">*</span>
+                                                    </Label>
+                                                    <div className="position-relative">
+                                                        <i>
+                                                        <FeatherIcon
+                                                            icon="user"
+                                                            className="fea icon-sm icons"
+                                                        />
+                                                        </i>
+                                                    </div>
+                                                    <Input
+                                                        name="name"
+                                                        id="name"
+                                                        type="text"
+                                                        className="form-control pl-5"
+                                                        placeholder="Title"
+                                                        value={title}
+                                                        onChange={(event)=>{
+                                                            setTitle(event.target.value);
+                                                        }}
                                                     />
-                                                    </i>
-                                                </div>
-                                                <Input
-                                                    name="name"
-                                                    id="name"
-                                                    type="text"
-                                                    className="form-control pl-5"
-                                                    placeholder="Title"
-                                                    value={title}
-                                                    onChange={(event)=>{
-                                                        setTitle(event.target.value);
-                                                    }}
-                                                />
-                                                </FormGroup>
-                                            </Col>
-                                            <Col md={6}>
-                                                <FormGroup>
-                                                <Label>
-                                                    Duration <span className="text-danger">*</span>
-                                                </Label>
-                                                <div className="position-relative">
-                                                    
-                                                </div>
-                                                <InputNumber id="duration" value={duration} showButtons buttonLayout="horizontal" step={1} decrementButtonClassName="p-button-danger" incrementButtonClassName="p-button-success" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" onValueChange={(e) => setDuration(e.value)} suffix=" minutes" />
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={12}>
-                                                <FormGroup className="upload-container">
+                                                    </FormGroup>
+                                                </Col>
+                                                <Col md={6}>
+                                                    <FormGroup>
                                                     <Label>
-                                                        Video Thumbnail<span className="text-danger">*</span>{' '}
+                                                        Duration <span className="text-danger">*</span>
                                                     </Label>
-                                                    <input id="guru-intro-thumbnail" onChange={handleChangeThumbnail} type="file"/>
-                                                    <div className="preview-container">
-                                                        {!thumbnailPreview.image?<h5>Select a file to upload</h5>:
-                                                        <div className="preview-bar">
-                                                            <img src={thumbnailPreview.image} className="preview-img" alt="preview"/>
-                                                            <h6>{thumbnailPreview.name}</h6>
-                                                            <h6>{`${thumbnailPreview.size} kb`}</h6>
-                                                            <button onClick={()=>{
-                                                                document.getElementById("guru-intro-thumbnail").value="";
-                                                                setThumbnailPreview({name:null,image:null,size:null});
-                                                            }}>
-                                                                <FeatherIcon icon="x-square"/>
-                                                            </button>
-                                                        </div>
+                                                    <div className="position-relative">
                                                         
-                                                        }
-                                                        <div className="upload-btn-container">
-                                                            {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
-                                                        </div>
                                                     </div>
-
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={12}>
-                                                <FormGroup className="upload-container">
-                                                    <Label>
-                                                        Intro Video<span className="text-danger">*</span>{' '}
-                                                    </Label>
-                                                    <input id="guru-intro-video" onChange={handleChangeVideo} type="file"/>
-                                                    <div className="preview-video-container">
-                                                        {!videoPreview.image?<h5>Select a file to upload</h5>:
-                                                        <div className="preview-bar">
-                                                            <video src={videoPreview.image} className="preview-video" controls/>
-                                                            <h6>{videoPreview.name}</h6>
-                                                            <h6>{`${videoPreview.size} kb`}</h6>
-                                                            <button onClick={()=>{
-                                                                document.getElementById("guru-intro-video").value="";
-                                                                setVideoPreview({name:null,image:null,size:null});
-                                                            }}>
-                                                                <FeatherIcon icon="x-square"/>
-                                                            </button>
+                                                    <InputNumber id="duration" value={duration} showButtons buttonLayout="horizontal" step={1} decrementButtonClassName="p-button-danger" incrementButtonClassName="p-button-success" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" onValueChange={(e) => setDuration(e.value)} suffix=" minutes" />
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md={12}>
+                                                    <FormGroup className="upload-container">
+                                                        <Label>
+                                                            Video Thumbnail<span className="text-danger">*</span>{' '}
+                                                        </Label>
+                                                        <input id="guru-intro-thumbnail" onChange={handleChangeThumbnail} type="file"/>
+                                                        <div className="preview-container">
+                                                            {!thumbnailPreview.image?<h5>Select a file to upload</h5>:
+                                                            <div className="preview-bar">
+                                                                <img src={thumbnailPreview.image} className="preview-img" alt="preview"/>
+                                                                <h6>{thumbnailPreview.name}</h6>
+                                                                <h6>{`${thumbnailPreview.size} kb`}</h6>
+                                                                <button onClick={()=>{
+                                                                    document.getElementById("guru-intro-thumbnail").value="";
+                                                                    setThumbnailPreview({name:null,image:null,size:null});
+                                                                }}>
+                                                                    <FeatherIcon icon="x-square"/>
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            }
+                                                            <div className="upload-btn-container">
+                                                                {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
+                                                            </div>
                                                         </div>
-                                                        
-                                                        }
-                                                        <div className="upload-btn-container">
-                                                            {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
+    
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md={12}>
+                                                    <FormGroup className="upload-container">
+                                                        <Label>
+                                                            Intro Video<span className="text-danger">*</span>{' '}
+                                                        </Label>
+                                                        <input id="guru-intro-video" onChange={handleChangeVideo} type="file"/>
+                                                        <div className="preview-video-container">
+                                                            {!videoPreview.image?<h5>Select a file to upload</h5>:
+                                                            <div className="preview-bar">
+                                                                <video src={videoPreview.image} className="preview-video" controls/>
+                                                                <h6>{videoPreview.name}</h6>
+                                                                <h6>{`${videoPreview.size} kb`}</h6>
+                                                                <button onClick={()=>{
+                                                                    document.getElementById("guru-intro-video").value="";
+                                                                    setVideoPreview({name:null,image:null,size:null});
+                                                                }}>
+                                                                    <FeatherIcon icon="x-square"/>
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            }
+                                                            <div className="upload-btn-container">
+                                                                {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </FormGroup>
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                            <Col sm={12}>
+                                                {uploading.whole?
+                                                    <Spinner color="#ff5001"></Spinner>
+                                                    :
+                                                    <input
+                                                    type="submit"
+                                                    id="submit"
+                                                    name="send"
+                                                    className="touch-btn"
+                                                    value="Add"
+                                                    onClick={handleAdd}
+                                                    />
+                                                }
+                                                
                                             </Col>
-                                        </Row>
-                                        <Row>
-                                        <Col sm={12}>
-                                            {uploading.whole?
-                                                <Spinner color="#ff5001"></Spinner>
-                                                :
-                                                <input
-                                                type="submit"
-                                                id="submit"
-                                                name="send"
-                                                className="touch-btn"
-                                                value="Add"
-                                                onClick={handleAdd}
-                                                />
-                                            }
-                                            
+                                            </Row>
+                                        </Form>
                                         </Col>
-                                        </Row>
-                                    </Form>
-                                    </Col>
-                                </Row>
-                                </div>
-                            </Col>
-                            </Row>
-                        </Container>
-                    </TabPanel>
-                    <TabPanel header = "View Videos">
-                        <Container>
-                            <Row>
-                            {guruObj.techniqueVideos.videoList.length>0 ?
-                                guruObj.techniqueVideos.videoList.map((video, key) =>
-                                    key % 2 === 0 ? (
-                                    <Col lg={6} xs={12} key={key} className="mb-4 pb-2">
-                                        <Card className="blog rounded border-0 shadow overflow-hidden">
-                                        <Row className="align-items-center no-gutters">
-                                            <Col md={6}>
-                                            <img
-                                                src={video.thumbnail}
-                                                className="img-fluid"
-                                                alt="thumbnail"
-                                            />
-                                            </Col>
-
-                                            <Col md={6}>
-                                            <CardBody className="content">
-                                                <h5>
-                                                <a
-                                                    href={video.video}
-                                                    rel="noreferrer"
-                                                    target="_blank"
-                                                    className="card-title title text-dark"
-                                                >
-                                                    {video.title}
-                                                </a>
-                                                </h5>
-                                                
-                                                <div className="post-meta d-flex justify-content-between mt-3">
-                                                <ul className="list-unstyled mb-0">
-                                                    <li className="list-inline-item mr-2 mb-0">
-                                                        <i className="mr-2">
-                                                            <FeatherIcon icon="clock"/>
-                                                        </i>
-                                                        {`${video.duration} mins`}
-                                                    </li>
-                                                </ul>
-                                                <a
-                                                    href={video.video}
-                                                    rel="noreferrer"
-                                                    target="_blank"
-                                                    className="text-muted readmore"
-                                                >
-                                                    Watch{" "}
-                                                    <i>
-                                                        <FeatherIcon icon="chevron-right"/>
-                                                    </i>
-                                                </a>
-                                                </div>
-                                            </CardBody>
-                                            </Col>
-                                        </Row>
-                                        </Card>
-                                    </Col>
-                                    ) : (
-                                    <Col lg={6} xs={12} key={key} className="mb-4 pb-2">
-                                        <Card className="blog rounded border-0 shadow overflow-hidden">
-                                        <Row className="align-items-center no-gutters">
-                                            <Col md={{ size: 6, order: 1 }} xs={{ order: 2 }}>
-                                            <CardBody className="content">
-                                                <h5>
-                                                <a
-                                                    href={video.video}
-                                                    rel="noreferrer"
-                                                    target="_blank"
-                                                    className="card-title title text-dark"
-                                                >
-                                                    {video.title}
-                                                </a>
-                                                </h5>
-                                                
-                                                <div className="post-meta d-flex justify-content-between mt-3">
-                                                <ul className="list-unstyled mb-0">
-                                                    <li className="list-inline-item mr-2 mb-0">
-                                                        <i className="mr-2">
-                                                            <FeatherIcon icon="clock"/>
-                                                        </i>
-                                                        {`${video.duration} mins`}
-                                                    </li>
-                                                </ul>
-                                                <a
-                                                    href={video.video}
-                                                    rel="noreferrer"
-                                                    target="_blank"
-                                                    className="text-muted readmore"
-                                                >
-                                                    Watch{" "}
-                                                    <i>
-                                                        <FeatherIcon icon="chevron-right"/>
-                                                    </i>
-                                                </a>
-                                                </div>
-                                            </CardBody>
-                                            </Col>
-                                            <Col md={{ size: 6, order: 2 }} xs={{ order: 1 }}>
-                                            <img
-                                                src={video.thumbnail}
-                                                className="img-fluid"
-                                                alt="thumbnail"
-                                            />
-                                            </Col>
-                                        </Row>
-                                        </Card>
-                                    </Col>
-                                    )):
-                                    <div className="no-video-container">
-                                        <h3>There are no technique videos</h3>
+                                    </Row>
                                     </div>
-                            }
-                            </Row>
-                        </Container>
-                    </TabPanel>
-                </TabView>
-                
-            </>
-            :
-            <div className="loader-container">
-                <div id="preloader">
-                    <div id="status">
-                    <div className="spinner">
-                        <div className="double-bounce1" />
-                        <div className="double-bounce2" />
-                    </div>
+                                </Col>
+                                </Row>
+                            </Container>
+                        </TabPanel>
+                        <TabPanel header = "View Videos">
+                            <Container>
+                                <Row>
+                                {guruObj.techniqueVideos.videoList.length>0 ?
+                                    guruObj.techniqueVideos.videoList.map((video, key) =>
+                                        key % 2 === 0 ? (
+                                        <Col lg={6} xs={12} key={key} className="mb-4 pb-2">
+                                            <Card className="blog rounded border-0 shadow overflow-hidden">
+                                            <Row className="align-items-center no-gutters">
+                                                <Col md={6}>
+                                                <img
+                                                    src={video.thumbnail}
+                                                    className="img-fluid"
+                                                    alt="thumbnail"
+                                                />
+                                                </Col>
+    
+                                                <Col md={6}>
+                                                <CardBody className="content">
+                                                    <h5>
+                                                    <a
+                                                        href={video.video}
+                                                        rel="noreferrer"
+                                                        target="_blank"
+                                                        className="card-title title text-dark"
+                                                    >
+                                                        {video.title}
+                                                    </a>
+                                                    </h5>
+                                                    
+                                                    <div className="post-meta d-flex justify-content-between mt-3">
+                                                    <ul className="list-unstyled mb-0">
+                                                        <li className="list-inline-item mr-2 mb-0">
+                                                            <i className="mr-2">
+                                                                <FeatherIcon icon="clock"/>
+                                                            </i>
+                                                            {`${video.duration} mins`}
+                                                        </li>
+                                                    </ul>
+                                                    <a
+                                                        href={video.video}
+                                                        rel="noreferrer"
+                                                        target="_blank"
+                                                        className="text-muted readmore"
+                                                    >
+                                                        Watch{" "}
+                                                        <i>
+                                                            <FeatherIcon icon="chevron-right"/>
+                                                        </i>
+                                                    </a>
+                                                    </div>
+                                                </CardBody>
+                                                </Col>
+                                            </Row>
+                                            </Card>
+                                        </Col>
+                                        ) : (
+                                        <Col lg={6} xs={12} key={key} className="mb-4 pb-2">
+                                            <Card className="blog rounded border-0 shadow overflow-hidden">
+                                            <Row className="align-items-center no-gutters">
+                                                <Col md={{ size: 6, order: 1 }} xs={{ order: 2 }}>
+                                                <CardBody className="content">
+                                                    <h5>
+                                                    <a
+                                                        href={video.video}
+                                                        rel="noreferrer"
+                                                        target="_blank"
+                                                        className="card-title title text-dark"
+                                                    >
+                                                        {video.title}
+                                                    </a>
+                                                    </h5>
+                                                    
+                                                    <div className="post-meta d-flex justify-content-between mt-3">
+                                                    <ul className="list-unstyled mb-0">
+                                                        <li className="list-inline-item mr-2 mb-0">
+                                                            <i className="mr-2">
+                                                                <FeatherIcon icon="clock"/>
+                                                            </i>
+                                                            {`${video.duration} mins`}
+                                                        </li>
+                                                    </ul>
+                                                    <a
+                                                        href={video.video}
+                                                        rel="noreferrer"
+                                                        target="_blank"
+                                                        className="text-muted readmore"
+                                                    >
+                                                        Watch{" "}
+                                                        <i>
+                                                            <FeatherIcon icon="chevron-right"/>
+                                                        </i>
+                                                    </a>
+                                                    </div>
+                                                </CardBody>
+                                                </Col>
+                                                <Col md={{ size: 6, order: 2 }} xs={{ order: 1 }}>
+                                                <img
+                                                    src={video.thumbnail}
+                                                    className="img-fluid"
+                                                    alt="thumbnail"
+                                                />
+                                                </Col>
+                                            </Row>
+                                            </Card>
+                                        </Col>
+                                        )):
+                                        <div className="no-video-container">
+                                            <h3>There are no technique videos</h3>
+                                        </div>
+                                }
+                                </Row>
+                            </Container>
+                        </TabPanel>
+                    </TabView>
+                    
+                </>
+                :
+                <div className="loader-container">
+                    <div id="preloader">
+                        <div id="status">
+                        <div className="spinner">
+                            <div className="double-bounce1" />
+                            <div className="double-bounce2" />
+                        </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                :
+                <Unauthorized/>
             }
             
         </div>

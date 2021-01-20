@@ -18,6 +18,8 @@ import { TabView, TabPanel } from 'primereact/tabview';
 import {Button} from "primereact/button";
 import "./style.css"
 import Banner from '../Layout/Banner/Banner';
+import {useSelector} from "react-redux";
+import Unauthorized from '../Unauthorized/Unauthorized';
 function UpdateGuru() {
     const query = new URLSearchParams(useLocation().search);
     const toast = useRef(null);
@@ -25,6 +27,7 @@ function UpdateGuru() {
     const toast2 = useRef(null);
     const toast3 = useRef(null);
     const toast4 = useRef(null);
+    const auth = useSelector(state => state.auth)
     const [name,setName] = useState({firstName:"",secondName:""});
     const [id,setId] = useState("");
     const [activeIndex,setActiveIndex] = useState(0);
@@ -691,316 +694,318 @@ function UpdateGuru() {
                 }
                 </div>
             </Dialog>
-            {!loading.category && !loading.filter && !loading.keyword && !loading.guruObj ? 
-            <>
-                <Banner title="Update Guru Profile"/>
-                <Container>
-                    <Row className="justify-content-center">
-                    <Col lg={10} xs={12}>
-                        <div className="rounded p-4 shadow">
-                        <Row>
-                            <Col xs={12}>
-                            <Form>
-                                <TabView activeIndex={activeIndex} onTabChange={(event)=>{
-                                    setChange([]);
-                                    setActiveIndex(event.index);
-                                }}>
-                                    <TabPanel header="Data">
-                                        <Row>
-                                            <Col md={6}>
-                                                <FormGroup>
-                                                <Label>
-                                                    Guru Name
-                                                </Label>
-                                                <div className="position-relative">
-                                                    <i>
-                                                    <FeatherIcon
-                                                        icon="user"
-                                                        className="fea icon-sm icons"
-                                                    />
-                                                    </i>
-                                                </div>
-                                                <Input
-                                                    name="name"
-                                                    id="name"
-                                                    type="text"
-                                                    className="form-control pl-5"
-                                                    placeholder="First Name :"
-                                                    value={name.firstName}
-                                                    onChange={(event)=>{
-                                                        setName((prev)=>{
-                                                            return {...prev,firstName:event.target.value}
-                                                        })
-                                                    }}
-                                                />
-                                                </FormGroup>
-                                            </Col>
-                                            <Col md={6}>
-                                                <FormGroup>
-                                                <Label></Label>
-                                                <Input
-                                                    name="lastName"
-                                                    id="lastName"
-                                                    type="text"
-                                                    className="form-control pl-3 mt-2"
-                                                    placeholder="Last Name :"
-                                                    value={name.secondName}
-                                                    onChange={(event)=>{
-                                                        setName((prev)=>{
-                                                            return {...prev,secondName:event.target.value}
-                                                        })
-                                                    }}
-                                                />
-                                                </FormGroup>
-                                            </Col>
-                                            <Col md={12}>
-                                                <FormGroup>
-                                                <Label>
-                                                    Email{' '}
-                                                    
-                                                </Label>
-                                                <div className="position-relative">
-                                                    <i>
-                                                    <FeatherIcon
-                                                        icon="mail"
-                                                        className="fea icon-sm icons"
-                                                    />
-                                                    </i>
-                                                </div>
-                                                <Input
-                                                    name="email"
-                                                    id="email"
-                                                    type="email"
-                                                    className="form-control pl-5"
-                                                    placeholder="Your email :"
-                                                    value={email}
-                                                    onChange={(event)=>{
-                                                        setEmail(event.target.value)
-                                                    }}
-                                                />
-                                                </FormGroup>
-                                            </Col>
-                                            <Col md={12}>
-                                                <FormGroup>
-                                                <Label>
-                                                    Bio
-                                                </Label>
-                                                <div className="position-relative">
-                                                    <i>
-                                                    <FeatherIcon
-                                                        icon="info"
-                                                        className="fea icon-sm icons"
-                                                    />
-                                                    </i>
-                                                </div>
-                                                <textarea
-                                                    name="comments"
-                                                    id="comments"
-                                                    rows="4"
-                                                    className="form-control bio-textarea pl-5"
-                                                    value={bio}
-                                                    onChange={(event)=>{
-                                                        setBio(event.target.value);
-                                                    }}
-                                                ></textarea>
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={12}>
-                                                <FormGroup className="multiselect-container">
+            {auth.user && auth.idToken?
+                !loading.category && !loading.filter && !loading.keyword && !loading.guruObj ? 
+                <>
+                    <Banner title="Update Guru Profile"/>
+                    <Container>
+                        <Row className="justify-content-center">
+                        <Col lg={10} xs={12}>
+                            <div className="rounded p-4 shadow">
+                            <Row>
+                                <Col xs={12}>
+                                <Form>
+                                    <TabView activeIndex={activeIndex} onTabChange={(event)=>{
+                                        setChange([]);
+                                        setActiveIndex(event.index);
+                                    }}>
+                                        <TabPanel header="Data">
+                                            <Row>
+                                                <Col md={6}>
+                                                    <FormGroup>
                                                     <Label>
-                                                        Select Categories
+                                                        Guru Name
                                                     </Label>
-                                                    <MultiSelect value={selectedCategory} options={categories}  onChange={(e) => setSelectedCategory(e.value)} optionLabel="name" placeholder="" filter className="multiselect-custom" itemTemplate={itemTemplate} selectedItemTemplate={itemTemplate} />
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={12}>
-                                                <FormGroup className="multiselect-container">
+                                                    <div className="position-relative">
+                                                        <i>
+                                                        <FeatherIcon
+                                                            icon="user"
+                                                            className="fea icon-sm icons"
+                                                        />
+                                                        </i>
+                                                    </div>
+                                                    <Input
+                                                        name="name"
+                                                        id="name"
+                                                        type="text"
+                                                        className="form-control pl-5"
+                                                        placeholder="First Name :"
+                                                        value={name.firstName}
+                                                        onChange={(event)=>{
+                                                            setName((prev)=>{
+                                                                return {...prev,firstName:event.target.value}
+                                                            })
+                                                        }}
+                                                    />
+                                                    </FormGroup>
+                                                </Col>
+                                                <Col md={6}>
+                                                    <FormGroup>
+                                                    <Label></Label>
+                                                    <Input
+                                                        name="lastName"
+                                                        id="lastName"
+                                                        type="text"
+                                                        className="form-control pl-3 mt-2"
+                                                        placeholder="Last Name :"
+                                                        value={name.secondName}
+                                                        onChange={(event)=>{
+                                                            setName((prev)=>{
+                                                                return {...prev,secondName:event.target.value}
+                                                            })
+                                                        }}
+                                                    />
+                                                    </FormGroup>
+                                                </Col>
+                                                <Col md={12}>
+                                                    <FormGroup>
                                                     <Label>
-                                                        Select Filters
+                                                        Email{' '}
+                                                        
                                                     </Label>
-                                                    <MultiSelect value={selectedFilter} options={filters}  onChange={(e) => {
-                                                        setSelectedFilter(e.value)}} optionLabel="name" placeholder="" filter className="multiselect-custom" itemTemplate={itemTemplate} selectedItemTemplate={itemTemplate} />
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={12}>
-                                                <FormGroup className="multiselect-container">
+                                                    <div className="position-relative">
+                                                        <i>
+                                                        <FeatherIcon
+                                                            icon="mail"
+                                                            className="fea icon-sm icons"
+                                                        />
+                                                        </i>
+                                                    </div>
+                                                    <Input
+                                                        name="email"
+                                                        id="email"
+                                                        type="email"
+                                                        className="form-control pl-5"
+                                                        placeholder="Your email :"
+                                                        value={email}
+                                                        onChange={(event)=>{
+                                                            setEmail(event.target.value)
+                                                        }}
+                                                    />
+                                                    </FormGroup>
+                                                </Col>
+                                                <Col md={12}>
+                                                    <FormGroup>
                                                     <Label>
-                                                        Select Keywords
+                                                        Bio
                                                     </Label>
-                                                    <MultiSelect value={selectedKeyword} options={keywords}  onChange={(e) => {
-                                                        setSelectedKeyword(e.value)}} optionLabel="name" placeholder="" filter className="multiselect-custom" itemTemplate={itemTemplate} selectedItemTemplate={itemTemplate} />
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col sm={12}>
-                                                <input
-                                                type="submit"
-                                                id="submit"
-                                                name="send"
-                                                className="touch-btn"
-                                                value="Update Data"
-                                                onClick={handleUpdateData}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    </TabPanel>
-                                    <TabPanel header="Profile">
-                                        <Row>
-                                            <Col md={12}>
-                                                <FormGroup className="upload-container">
+                                                    <div className="position-relative">
+                                                        <i>
+                                                        <FeatherIcon
+                                                            icon="info"
+                                                            className="fea icon-sm icons"
+                                                        />
+                                                        </i>
+                                                    </div>
+                                                    <textarea
+                                                        name="comments"
+                                                        id="comments"
+                                                        rows="4"
+                                                        className="form-control bio-textarea pl-5"
+                                                        value={bio}
+                                                        onChange={(event)=>{
+                                                            setBio(event.target.value);
+                                                        }}
+                                                    ></textarea>
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md={12}>
+                                                    <FormGroup className="multiselect-container">
+                                                        <Label>
+                                                            Select Categories
+                                                        </Label>
+                                                        <MultiSelect value={selectedCategory} options={categories}  onChange={(e) => setSelectedCategory(e.value)} optionLabel="name" placeholder="" filter className="multiselect-custom" itemTemplate={itemTemplate} selectedItemTemplate={itemTemplate} />
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md={12}>
+                                                    <FormGroup className="multiselect-container">
+                                                        <Label>
+                                                            Select Filters
+                                                        </Label>
+                                                        <MultiSelect value={selectedFilter} options={filters}  onChange={(e) => {
+                                                            setSelectedFilter(e.value)}} optionLabel="name" placeholder="" filter className="multiselect-custom" itemTemplate={itemTemplate} selectedItemTemplate={itemTemplate} />
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md={12}>
+                                                    <FormGroup className="multiselect-container">
+                                                        <Label>
+                                                            Select Keywords
+                                                        </Label>
+                                                        <MultiSelect value={selectedKeyword} options={keywords}  onChange={(e) => {
+                                                            setSelectedKeyword(e.value)}} optionLabel="name" placeholder="" filter className="multiselect-custom" itemTemplate={itemTemplate} selectedItemTemplate={itemTemplate} />
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col sm={12}>
+                                                    <input
+                                                    type="submit"
+                                                    id="submit"
+                                                    name="send"
+                                                    className="touch-btn"
+                                                    value="Update Data"
+                                                    onClick={handleUpdateData}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </TabPanel>
+                                        <TabPanel header="Profile">
+                                            <Row>
+                                                <Col md={12}>
+                                                    <FormGroup className="upload-container">
+                                                        <div className="current-profile-container">
+                                                            <img src={guruObj.profilePhoto} className="current-profile-img" alt="current-profile"/>
+                                                        </div>
+                                                        <Label>
+                                                            Upload new Profile Photo
+                                                        </Label>
+                                                        <input id="guru-profile" onChange={handleChangeProfile} type="file"/>
+                                                        <div className="preview-container">
+                                                            {!profilePreview.image?<h5>Select a file to upload</h5>:
+                                                            <div className="preview-bar">
+                                                                <img src={profilePreview.image} className="preview-img" alt="preview"/>
+                                                                <h6>{profilePreview.name}</h6>
+                                                                <h6>{`${profilePreview.size} kb`}</h6>
+                                                                <button onClick={()=>{
+                                                                    document.getElementById("guru-profile").value="";
+                                                                    setProfilePreview({name:null,image:null,size:null});
+                                                                }}>
+                                                                    <FeatherIcon icon="x-square"/>
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            }
+                                                            <div className="upload-btn-container">
+                                                                {uploading.profile?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerProfile}><FeatherIcon icon="upload"/></button>}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col sm={12}>
+                                                    <input
+                                                    type="submit"
+                                                    id="submit"
+                                                    name="send"
+                                                    className="touch-btn"
+                                                    value="Update Profile"
+                                                    onClick={handleUpdateProfile}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </TabPanel>
+                                        <TabPanel header="Intro Video">
+                                            <Row>
+                                                <Col md={12}>
+                                                    <FormGroup className="upload-container">
+                                                        <div className="current-profile-container">
+                                                            <img src={guruObj.introVideo.photo} className="current-profile-img" alt="current-profile"/>
+                                                        </div>
+                                                        <Label>
+                                                            Update Intro Video Thumbnail
+                                                        </Label>
+                                                        <input id="guru-intro-thumbnail" onChange={handleChangeThumbnail} type="file"/>
+                                                        <div className="preview-container">
+                                                            {!thumbnailPreview.image?<h5>Select a file to upload</h5>:
+                                                            <div className="preview-bar">
+                                                                <img src={thumbnailPreview.image} className="preview-img" alt="preview"/>
+                                                                <h6>{thumbnailPreview.name}</h6>
+                                                                <h6>{`${thumbnailPreview.size} kb`}</h6>
+                                                                <button onClick={()=>{
+                                                                    document.getElementById("guru-intro-thumbnail").value="";
+                                                                    setThumbnailPreview({name:null,image:null,size:null});
+                                                                }}>
+                                                                    <FeatherIcon icon="x-square"/>
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            }
+                                                            <div className="upload-btn-container">
+                                                                {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row>
+                                            <Row>
+                                                <Col md={12}>
+                                                    <FormGroup className="upload-container">
                                                     <div className="current-profile-container">
-                                                        <img src={guruObj.profilePhoto} className="current-profile-img" alt="current-profile"/>
-                                                    </div>
-                                                    <Label>
-                                                        Upload new Profile Photo
-                                                    </Label>
-                                                    <input id="guru-profile" onChange={handleChangeProfile} type="file"/>
-                                                    <div className="preview-container">
-                                                        {!profilePreview.image?<h5>Select a file to upload</h5>:
-                                                        <div className="preview-bar">
-                                                            <img src={profilePreview.image} className="preview-img" alt="preview"/>
-                                                            <h6>{profilePreview.name}</h6>
-                                                            <h6>{`${profilePreview.size} kb`}</h6>
-                                                            <button onClick={()=>{
-                                                                document.getElementById("guru-profile").value="";
-                                                                setProfilePreview({name:null,image:null,size:null});
-                                                            }}>
-                                                                <FeatherIcon icon="x-square"/>
-                                                            </button>
+                                                            <video src={guruObj.introVideo.video} className="current-profile-img" controls/>
+                                                        </div>
+                                                        <Label>
+                                                            Update Intro Video
+                                                        </Label>
+                                                        <input id="guru-intro-video" onChange={handleChangeVideo} type="file"/>
+                                                        <div className="preview-video-container">
+                                                            {!videoPreview.image?<h5>Select a file to upload</h5>:
+                                                            <div className="preview-bar">
+                                                                <video src={videoPreview.image} className="preview-video" controls/>
+                                                                <h6>{videoPreview.name}</h6>
+                                                                <h6>{`${videoPreview.size} kb`}</h6>
+                                                                <button onClick={()=>{
+                                                                    document.getElementById("guru-intro-video").value="";
+                                                                    setVideoPreview({name:null,image:null,size:null});
+                                                                }}>
+                                                                    <FeatherIcon icon="x-square"/>
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            }
+                                                            <div className="upload-btn-container">
+                                                                {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
+                                                            </div>
                                                         </div>
                                                         
-                                                        }
-                                                        <div className="upload-btn-container">
-                                                            {uploading.profile?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerProfile}><FeatherIcon icon="upload"/></button>}
-                                                        </div>
-                                                    </div>
-                                                    
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col sm={12}>
-                                                <input
-                                                type="submit"
-                                                id="submit"
-                                                name="send"
-                                                className="touch-btn"
-                                                value="Update Profile"
-                                                onClick={handleUpdateProfile}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    </TabPanel>
-                                    <TabPanel header="Intro Video">
-                                        <Row>
-                                            <Col md={12}>
-                                                <FormGroup className="upload-container">
-                                                    <div className="current-profile-container">
-                                                        <img src={guruObj.introVideo.photo} className="current-profile-img" alt="current-profile"/>
-                                                    </div>
-                                                    <Label>
-                                                        Update Intro Video Thumbnail
-                                                    </Label>
-                                                    <input id="guru-intro-thumbnail" onChange={handleChangeThumbnail} type="file"/>
-                                                    <div className="preview-container">
-                                                        {!thumbnailPreview.image?<h5>Select a file to upload</h5>:
-                                                        <div className="preview-bar">
-                                                            <img src={thumbnailPreview.image} className="preview-img" alt="preview"/>
-                                                            <h6>{thumbnailPreview.name}</h6>
-                                                            <h6>{`${thumbnailPreview.size} kb`}</h6>
-                                                            <button onClick={()=>{
-                                                                document.getElementById("guru-intro-thumbnail").value="";
-                                                                setThumbnailPreview({name:null,image:null,size:null});
-                                                            }}>
-                                                                <FeatherIcon icon="x-square"/>
-                                                            </button>
-                                                        </div>
                                                         
-                                                        }
-                                                        <div className="upload-btn-container">
-                                                            {uploading.thumbnail?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerThumbnail}><FeatherIcon icon="upload"/></button>}
-                                                        </div>
-                                                    </div>
-                                                    
-                                                </FormGroup>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col md={12}>
-                                                <FormGroup className="upload-container">
-                                                <div className="current-profile-container">
-                                                        <video src={guruObj.introVideo.video} className="current-profile-img" controls/>
-                                                    </div>
-                                                    <Label>
-                                                        Update Intro Video
-                                                    </Label>
-                                                    <input id="guru-intro-video" onChange={handleChangeVideo} type="file"/>
-                                                    <div className="preview-video-container">
-                                                        {!videoPreview.image?<h5>Select a file to upload</h5>:
-                                                        <div className="preview-bar">
-                                                            <video src={videoPreview.image} className="preview-video" controls/>
-                                                            <h6>{videoPreview.name}</h6>
-                                                            <h6>{`${videoPreview.size} kb`}</h6>
-                                                            <button onClick={()=>{
-                                                                document.getElementById("guru-intro-video").value="";
-                                                                setVideoPreview({name:null,image:null,size:null});
-                                                            }}>
-                                                                <FeatherIcon icon="x-square"/>
-                                                            </button>
-                                                        </div>
-                                                        
-                                                        }
-                                                        <div className="upload-btn-container">
-                                                            {uploading.video?<Spinner color="black" className="mt-2 ml-3"/>:<button className="upload-btn mt-2" onClick={uploadHandlerVideo}><FeatherIcon icon="upload"/></button>}
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    
-                                                </FormGroup>
-                                            </Col>
-                                        </Row> 
-                                        <Row>
-                                            <Col sm={12}>
-                                                <input
-                                                type="submit"
-                                                id="submit"
-                                                name="send"
-                                                className="touch-btn"
-                                                value="Update Data"
-                                                onClick={handleUpdateIntro}
-                                                />
-                                            </Col>
-                                        </Row>
-                                    </TabPanel>
-                                </TabView>
-                            </Form>
-                            </Col>
+                                                    </FormGroup>
+                                                </Col>
+                                            </Row> 
+                                            <Row>
+                                                <Col sm={12}>
+                                                    <input
+                                                    type="submit"
+                                                    id="submit"
+                                                    name="send"
+                                                    className="touch-btn"
+                                                    value="Update Data"
+                                                    onClick={handleUpdateIntro}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </TabPanel>
+                                    </TabView>
+                                </Form>
+                                </Col>
+                            </Row>
+                            </div>
+                        </Col>
                         </Row>
+                    </Container>
+                </>
+                :
+                <div className="loader-container">
+                    <div id="preloader">
+                        <div id="status">
+                        <div className="spinner">
+                            <div className="double-bounce1" />
+                            <div className="double-bounce2" />
                         </div>
-                    </Col>
-                    </Row>
-                </Container>
-            </>
-            :
-            <div className="loader-container">
-                <div id="preloader">
-                    <div id="status">
-                    <div className="spinner">
-                        <div className="double-bounce1" />
-                        <div className="double-bounce2" />
-                    </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+                :
+                <Unauthorized/>
             }
-            
         </div>
     )
 }

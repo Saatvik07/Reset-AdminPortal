@@ -10,8 +10,11 @@ import {useLocation} from "react-router-dom";
 import 'react-nice-dates/build/style.css';
 import "./style.css";
 import { format } from 'date-fns';
+import {useSelector} from "react-redux";
+import Unauthorized from '../Unauthorized/Unauthorized';
 function AddAvailability() {
     const query = new URLSearchParams(useLocation().search);
+    const auth = useSelector((state)=>state.auth);
     const toast = useRef(null);
     const toast1 = useRef(null);
     const [date,setDate] = useState(null);
@@ -283,8 +286,9 @@ function AddAvailability() {
       })
     }
     return (
-        <>
-            <Toast ref={toast} position="bottom-right"></Toast>
+        <> 
+          <Toast ref={toast} position="bottom-right"></Toast>
+          {auth.user && auth.idToken ? 
             <section className="section">
             <Container style={{ maxWidth: '80vw', margin: '0 auto' }}>
                 <Row style={{ display: 'flex', justifyContent: 'center' }}>
@@ -383,6 +387,10 @@ function AddAvailability() {
                 </Row>
             </Container>
             </section>
+          :
+            <Unauthorized/>
+          }
+            
         </>
     )
 }

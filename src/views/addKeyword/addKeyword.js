@@ -5,10 +5,13 @@ import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
 import Banner from '../Layout/Banner/Banner';
 import { Container,Row,Col,Spinner,Alert } from 'reactstrap';
+import {useSelector} from "react-redux";
+import Unauthorized from '../Unauthorized/Unauthorized';
 import "./style.css";
 function AddKeyword() {
     const toast = useRef(null);
     const toast1 = useRef(null);
+    const auth = useSelector(state => state.auth)
     const [keywords,setKeywords] = useState([]);
     const [loading,setLoading] = useState(true);
     const [fetching,setFetching] = useState(false);
@@ -78,7 +81,8 @@ function AddKeyword() {
         <div>
             <Toast ref={toast} position="bottom-right" />
             <Toast ref={toast1} position="bottom-right" />
-            {loading?
+            {auth.user&&auth.idToken?
+                loading?
                 <div className="loader-container">
                     <div id="preloader">
                         <div id="status">
@@ -118,6 +122,8 @@ function AddKeyword() {
                         </Row>
                     </Container>
                 </>
+            :
+            <Unauthorized/>
             }
 
         </div>

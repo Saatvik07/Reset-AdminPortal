@@ -5,10 +5,13 @@ import { Button } from "primereact/button";
 import Banner from '../Layout/Banner/Banner';
 import { Toast } from 'primereact/toast';
 import { Container,Row,Col,Spinner} from 'reactstrap';
+import {useSelector} from "react-redux";
+import Unauthorized from '../Unauthorized/Unauthorized';
 import "./style.css";
 function AddCategory() {
     const toast = useRef(null);
     const toast1 = useRef(null);
+    const auth = useSelector((state)=>state.auth);
     const [categories,setCategories] = useState([]);
     const [loading,setLoading] = useState(true);
     const [fetching,setFetching] = useState(false);
@@ -78,7 +81,8 @@ function AddCategory() {
         <div>
             <Toast ref={toast} position="bottom-right" />
             <Toast ref={toast1} position="bottom-right" />
-            {loading?
+            {auth.user&&auth.idToken?
+                loading?
                 <div className="loader-container">
                     <div id="preloader">
                         <div id="status">
@@ -118,7 +122,7 @@ function AddCategory() {
                         </Row>
                     </Container>
                 </>
-            }
+            :<Unauthorized/>}
 
         </div>
     )
