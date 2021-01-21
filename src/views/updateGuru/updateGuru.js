@@ -694,7 +694,7 @@ function UpdateGuru() {
                 }
                 </div>
             </Dialog>
-            {auth.user && auth.idToken?
+            {auth.idToken?
                 !loading.category && !loading.filter && !loading.keyword && !loading.guruObj ? 
                 <>
                     <Banner title="Update Guru Profile"/>

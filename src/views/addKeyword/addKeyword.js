@@ -81,7 +81,7 @@ function AddKeyword() {
         <div>
             <Toast ref={toast} position="bottom-right" />
             <Toast ref={toast1} position="bottom-right" />
-            {auth.user&&auth.idToken?
+            {auth.idToken?
                 loading?
                 <div className="loader-container">
                     <div id="preloader">

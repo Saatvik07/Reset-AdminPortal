@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import {
   Container,
   Row,
@@ -17,11 +17,13 @@ import nikki from '../../assets/images/nikkiKiyimbaCard.jpg';
 import abi from '../../assets/images/abiAdamsCard.png';
 import paola from '../../assets/images/paolaLangellaCard.jpg';
 import Banner from '../Layout/Banner/Banner';
-import {useSelector} from "react-redux";
+import {useSelector,useDispatch} from "react-redux";
 import Unauthorized from '../Unauthorized/Unauthorized';
-
+import {getUser } from '../../Store/ActionCreators/auth';
 function ViewAllGurus(){
   const auth = useSelector(state => state.auth)
+  const dispatch = useDispatch();
+  const [loading,setLoading] = useState(true);
   const [gurus,setGurus] = useState([
     {
       id: 1,
@@ -72,9 +74,14 @@ function ViewAllGurus(){
         'Paola Langella is a Pilates Instructor & Health Coach Nutritionist. She grew up in Italy where she studied ballet for 10 years. During her studies in the UK, whilst…'
     }
   ]);
+  useEffect(()=>{
+    dispatch(getUser()).then(()=>{
+      setLoading(false);
+    });
+  },[])
     return (
       <>
-        {auth.user&&auth.idToken?
+        {auth.idToken?
           <>
               <Banner title="Reset Gurus"/>
               <section>
@@ -181,6 +188,18 @@ function ViewAllGurus(){
               </section>
             </>
         :
+            auth.isLoading&&loading?
+            <div className="loader-container">
+                    <div id="preloader">
+                        <div id="status">
+                        <div className="spinner">
+                            <div className="double-bounce1" />
+                            <div className="double-bounce2" />
+                        </div>
+                        </div>
+                    </div>
+            </div>
+            :
             <Unauthorized/>
         }
 

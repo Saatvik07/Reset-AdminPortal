@@ -276,7 +276,7 @@ function AddNewVideo() {
             <Toast ref={toast1} position="bottom-right"></Toast>
             <Toast ref={toast2} position="bottom-right"></Toast>
             <Toast ref={toast2} position="bottom-right"></Toast>
-            {auth.user&&auth.idToken?
+            {auth.idToken?
                 !loading ? 
                 <>
                     <TabView activeIndex={activeIndex} onTabChange={(e)=>{

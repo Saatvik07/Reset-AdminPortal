@@ -23,6 +23,15 @@
 #navigation {
 	z-index: 1;
 }
+.account-btn,
+.signout-btn {
+	border-radius: 200px;
+}
+.button-container {
+	display: flex !important;
+	justify-content: center;
+	align-items: center;
+}
 #topnav {
 	right: 0;
 	left: 0;
@@ -48,7 +57,7 @@
 			}
 			.submenu {
 				li.active > a {
-					color: !important;
+					color: #ff5001 !important;
 				}
 			}
 			&.active {

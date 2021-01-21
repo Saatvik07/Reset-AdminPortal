@@ -12,68 +12,110 @@ import "./style.css";
 import { format } from 'date-fns';
 import {useSelector} from "react-redux";
 import Unauthorized from '../Unauthorized/Unauthorized';
+import { RadioButton } from 'primereact/radiobutton';
+import { ListBox } from 'primereact/listbox';
 function AddAvailability() {
     const query = new URLSearchParams(useLocation().search);
     const auth = useSelector((state)=>state.auth);
     const toast = useRef(null);
     const toast1 = useRef(null);
     const [date,setDate] = useState(null);
-    const [availability,setAvailability] = useState(null);
-    const [cost,setCost] = useState(30);
-    const [note,setNote] = useState("");
+    const [availability,setAvailability] = useState([]);
+    const [morningSlots,setMorningSlots] = useState({
+      display:[],
+      all:[]
+    });
+    const [afternoonSlots,setAfternoonSlots] = useState({
+      display:[],
+      all:[],
+    });
+    const [eveningSlots,setEveningSlots] = useState({
+      display:[],
+      all:[],
+    }); 
     const [id,setId] = useState(803615196);
-    const [startTime,setStartTime] = useState(new Date("Mon Jan 11 2021 8:30:01 GMT+0530 (India Standard Time)"));
-    const [duration,setDuration] = useState(15);
+    const [startTime,setStartTime] = useState(new Date("Mon Jan 11 2021 8:00:01 GMT+0530 (India Standard Time)"));
+    const [endTime,setEndTime] = useState(new Date("Mon Jan 11 2021 8:20:01 GMT+0530 (India Standard Time)"));
     const [loading,setLoading] = useState(false);
     const [uploading,setUploading] = useState(false);
+    const [activeTime,setActiveTime] = useState(20);
     const [activeIndex,setActiveIndex] = useState(0);
-    const fillSlots = (input)=>{
+    const dt = useRef(null);
+    const fillSlots = async(input)=>{
         try{
-            document.getElementById('morningList').innerHTML = '';
-            document.getElementById('afternoonList').innerHTML = '';
-            document.getElementById('eveningList').innerHTML = '';
-            let selected=date;
-            if(input){
-              selected=input;
-            }
-            availability.forEach((a) => {
-            if (a.Date === format(selected, 'yyyy/MM/dd', { locale: enGB })) {
-                const listHeading = document.createElement('li');
-                listHeading.className = 'heading';
-                listHeading.textContent = 'Morning';
-                document.getElementById('morningList').appendChild(listHeading);
-                const listHeading1 = document.createElement('li');
-                listHeading1.className = 'heading';
-                listHeading1.textContent = 'Afternoon';
-                document.getElementById('afternoonList').appendChild(listHeading1);
-                const listHeading2 = document.createElement('li');
-                listHeading2.className = 'heading';
-                listHeading2.textContent = 'Evening';
-                document.getElementById('eveningList').appendChild(listHeading2);
-                a.timeSlots.forEach((timeSlot) => {
-                let listName;
-                if (timeSlot.startAt.split(':')[0] <= 11) {
-                    listName = document.getElementById('morningList');
-                } else if (
-                    timeSlot.startAt.split(':')[0] >= 12 &&
-                    timeSlot.startAt.split(':')[0] <= 16
-                ) {
-                    listName = document.getElementById('afternoonList');
-                } else {
-                    listName = document.getElementById('eveningList');
+            const morning=[],afternoon =[],evening=[];
+            availability.forEach((slot)=>{
+              slot.slots.forEach((timeSlot)=>{
+                let hour = parseInt(timeSlot.startTime.split(":")[0],10);
+                if(hour<12){
+                  morning.push(timeSlot);
                 }
-                const listElement = document.createElement('li');
-                listElement.className = 'timeSlot';
-                listElement.onclick = () => {
-                    listElement.classList.contains('active')
-                    ? listElement.classList.remove('active')
-                    : listElement.classList.add('active');
-                };
-                listElement.textContent = timeSlot.startAt;
-                listName.appendChild(listElement);
-                });
-            }
-        });
+                else if (hour>=12 &&hour<17){
+                  afternoon.push(timeSlot);
+                }
+                else{
+                  evening.push(timeSlot);
+                }
+              })
+            });
+            console.log(morning,afternoon,evening);
+            setMorningSlots({
+              display:morning,
+              all:morning,
+            });
+            setAfternoonSlots({
+              display:afternoon,
+              all:afternoon,
+            });
+            setEveningSlots({
+              display:evening,
+              all:evening
+            });
+            // document.getElementById('morningList').innerHTML = '';
+            // document.getElementById('afternoonList').innerHTML = '';
+            // document.getElementById('eveningList').innerHTML = '';
+            // let selected=date;
+            // if(input){
+            //   selected=input;
+            // }
+            // availability.forEach((a) => {
+            // if (a.Date === format(selected, 'yyyy/MM/dd', { locale: enGB })) {
+            //     const listHeading = document.createElement('li');
+            //     listHeading.className = 'heading';
+            //     listHeading.textContent = 'Morning';
+            //     document.getElementById('morningList').appendChild(listHeading);
+            //     const listHeading1 = document.createElement('li');
+            //     listHeading1.className = 'heading';
+            //     listHeading1.textContent = 'Afternoon';
+            //     document.getElementById('afternoonList').appendChild(listHeading1);
+            //     const listHeading2 = document.createElement('li');
+            //     listHeading2.className = 'heading';
+            //     listHeading2.textContent = 'Evening';
+            //     document.getElementById('eveningList').appendChild(listHeading2);
+            //     a.timeSlots.forEach((timeSlot) => {
+            //     let listName;
+            //     if (timeSlot.startAt.split(':')[0] <= 11) {
+            //         listName = document.getElementById('morningList');
+            //     } else if (
+            //         timeSlot.startAt.split(':')[0] >= 12 &&
+            //         timeSlot.startAt.split(':')[0] <= 16
+            //     ) {
+            //         listName = document.getElementById('afternoonList');
+            //     } else {
+            //         listName = document.getElementById('eveningList');
+            //     }
+            //     const listElement = document.createElement('li');
+            //     listElement.className = 'timeSlot';
+            //     listElement.onclick = () => {
+            //         listElement.classList.contains('active')
+            //         ? listElement.classList.remove('active')
+            //         : listElement.classList.add('active');
+            //     };
+            //     listElement.textContent = timeSlot.startAt;
+            //     listName.appendChild(listElement);
+            //     });
+            // }
+        // });
         }
         catch(e){
             console.log(e);
@@ -83,149 +125,13 @@ function AddAvailability() {
     const fetchAvailability = () =>{
         setLoading(true);
         //setId(query.get("id"));
-        setAvailability( [
-            {
-              GuruID: '803615196',
-              Date: '2020/12/31',
-              timeSlots: [
-                {
-                  notes: ' Test1',
-                  cost: {
-                    minor: 10,
-                    currencyCode: '£',
-                    Major: 24
-                  },
-                  timeZone: 'GMT',
-                  durationMins: 15,
-                  ID: '574972432',
-                  startAt: '15:00',
-                  updateHistory: [
-                    {
-                      updateTimeStamp: '1609666586',
-                      status: 'Reserved'
-                    },
-                    {
-                      updateTimeStamp: '1609666586',
-                      status: 'Available'
-                    },
-                    {
-                      updateTimeStamp: '1609666586',
-                      status: 'Reserved'
-                    },
-                    {
-                      updateTimeStamp: '1609666586',
-                      status: 'Available'
-                    },
-                    {
-                      updateTimeStamp: '1609666586',
-                      status: 'Reserved'
-                    }
-                  ],
-                  status: 'Reserved'
-                }
-              ]
-            },
-            {
-              GuruID: '803615196',
-              Date: '2021/01/01',
-              timeSlots: [
-                {
-                  notes: ' Test1',
-                  cost: {
-                    minor: 10,
-                    currencyCode: '£',
-                    Major: 24
-                  },
-                  timeZone: 'GMT',
-                  durationMins: 15,
-                  ID: '249110224',
-                  startAt: '13:00',
-                  updateHistory: [
-                    {
-                      updateTimeStamp: '1609666586',
-                      status: 'Available'
-                    },
-                    {
-                      updateTimeStamp: '1609666586',
-                      status: 'Booked'
-                    },
-                    {
-                      updateTimeStamp: '1609666586',
-                      status: 'Reserved'
-                    }
-                  ],
-                  status: 'Reserved'
-                }
-              ]
-            },
-            {
-              GuruID: '803615196',
-              Date: '2021/01/07',
-              timeSlots: [
-                {
-                  notes: ' This is a very good session',
-                  cost: {
-                    minor: 0,
-                    currencyCode: '£',
-                    Major: 30
-                  },
-                  timeZone: 'GMT',
-                  durationMins: 15,
-                  ID: '873913521',
-                  startAt: '10:30',
-                  status: 'Available'
-                },
-                {
-                  notes: ' This is a very good session',
-                  cost: {
-                    minor: 0,
-                    currencyCode: '£',
-                    Major: 30
-                  },
-                  timeZone: 'GMT',
-                  durationMins: 15,
-                  ID: '817110287',
-                  startAt: '11:30',
-                  status: 'Available'
-                },
-                {
-                  notes: ' This is a very good session',
-                  cost: {
-                    minor: 0,
-                    currencyCode: '£',
-                    Major: 30
-                  },
-                  timeZone: 'GMT',
-                  durationMins: 15,
-                  ID: '582621531',
-                  startAt: '12:30',
-                  status: 'Available'
-                }
-              ]
-            },
-            {
-              GuruID: '803615196',
-              Date: '2021/01/10',
-              timeSlots: [
-                {
-                  notes: ' This is a very good session',
-                  cost: {
-                    minor: 0,
-                    currencyCode: '£',
-                    Major: 30
-                  },
-                  timeZone: 'GMT',
-                  durationMins: 15,
-                  ID: '890122959',
-                  startAt: '11:30',
-                  status: 'Available'
-                }
-              ]
-            }
-          ]);
           setTimeout(()=>{
+            fillSlots().then(()=>{
+              setActiveTime(20);
               setLoading(false);
-              fillSlots();
+            });
+              
+              
           },2000);
         // fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}/availability`).then(response=>{
         //     if(response.ok){
@@ -245,50 +151,161 @@ function AddAvailability() {
     useEffect(()=>{
         //setId(query.get("id"));
         fetchAvailability();
-    },[])
-    const addSlot = ()=>{
-      setUploading(true);
-      const timeSlot = {};
-      timeSlot.startAt = format(startTime,'HH:mm',{locale:enGB});
-      timeSlot.durationMins = duration
-      timeSlot.cost = {
-        currencyCode:"£",
-        major:Math.floor(cost),
-        minor:cost-Math.floor(cost)
-      };
-      timeSlot.status="available";
-      timeSlot.timeZone = "GMT";
-      timeSlot.note = note;
-      const fetchOptions = {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({date:format(date, 'yyyy/MM/dd', { locale: enGB }),timeSlot:timeSlot})
+    },[]);
+    const handleDurationChange = (event)=>{
+      setLoading(true);
+      setActiveTime(event.value);
+      const duration = event.value;
+      const callback = (slot)=>{
+        switch(duration){
+          case 20:
+            return true;
+          case 40:
+            let result;
+            let endMinute = slot.startMinute+40;
+            let endHour = slot.startHour;
+            if(endMinute>=60){
+              endMinute=endMinute%60;
+              endHour+=1;
+            }
+            availability.forEach((a)=>{
+              a.slots.forEach(timeSlot=>{
+                if((timeSlot.startHour===endHour&&timeSlot.startMinute===endMinute)||(endHour===parseInt(format(a.endTime,"HH:mm",{locale:enGB}).split(":")[0],10)&&endMinute===parseInt(format(a.endTime,"HH:mm",{locale:enGB}).split(":")[1],10))){
+                  result=true;
+                }
+              })
+            })
+            if(!result){
+              result=false;
+            }
+            return result;
+          case 60:
+            let result2;
+            let endMin = slot.startMinute+60;
+            let endHr = slot.startHour;
+            if(endMin>=60){
+              endMin=endMin%60;
+              endHr+=1;
+            }
+            availability.forEach((a)=>{
+              a.slots.forEach(timeSlot=>{
+                console.log(timeSlot.startTime,a.endTime);
+                if((timeSlot.startHour===endHr&&timeSlot.startMinute===endMin)||(endHr===parseInt(format(a.endTime,"HH:mm",{locale:enGB}).split(":")[0],10)&&endMin===parseInt(format(a.endTime,"HH:mm",{locale:enGB}).split(":")[1],10))){
+                  result2=true;
+                }
+              })
+            })
+            if(!result2){
+              result2=false;
+            }
+            return result2;
+          default:
+            return false
+        }
       }
-      fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}/availability`,fetchOptions).then(response=>{
-        if(response.ok){
-          return response.json();
-        }
-        if(response.status===400&&response.message==="booking already exists for this time, can not be added"){
-            toast.current.show({severity: 'error', summary: 'Slot already exists', detail: 'Sorry please choose another slot',life:5000});
-            setLoading(false);
-        }
-      }).then(jsonResponse=>{
-        return jsonResponse;
-      }).then(res=>{
-        toast1.current.show({severity: 'success', summary: 'Success', detail: `The slot was added to ${format(date,"yyyy/MM/dd",{locale:enGB})}`});
-        setStartTime(new Date("Mon Jan 11 2021 8:30:01 GMT+0530 (India Standard Time)"));
-        setDuration(15);
-        setCost(30);
-        setNote("");
-        setLoading(false);
-      })
+      setMorningSlots((prev)=>{
+        return {...prev,display:morningSlots.all.filter(callback)}
+      });
+      setAfternoonSlots((prev)=>{
+        return {...prev,display:afternoonSlots.all.filter(callback)}
+      });
+      setEveningSlots((prev)=>{
+        return {...prev,display:eveningSlots.all.filter(callback)}
+      });
+      setLoading(false);
     }
+    const addSlot = ()=>{
+      let startHour = parseInt(format(startTime,'HH',{locale:enGB}),10);
+      let startMinute = parseInt(format(startTime,'mm',{locale:enGB}),10);
+      const endHour = parseInt(format(endTime,'HH',{locale:enGB}),10);
+      const endMinute = parseInt(format(endTime,'mm',{locale:enGB}),10);
+      let timeSlotList = [];
+      while(startHour<=endHour){
+        if(`${startHour}:${startMinute}`===`${endHour}:${endMinute}`){
+          break;
+        }
+        else{
+          if(startMinute===0){
+            timeSlotList.push({
+              startTime:`${startHour}:${startMinute}0`,
+              startHour:startHour,
+              startMinute:startMinute,
+              status:"available"
+            })
+          }
+          else{
+            timeSlotList.push({
+              startTime:`${startHour}:${startMinute}`,
+              startHour:startHour,
+              startMinute:startMinute,
+              status:"available"
+            })
+          }
+        }
+        startMinute+=20;
+        if(startMinute===60){
+          startHour+=1;
+          startMinute=0;
+        }
+      }
+      const slot = {
+        startTime:startTime,
+        endTime:endTime,
+        slots:timeSlotList
+      }
+      // let arr = [...availability];
+      // arr.push(slot);
+      setAvailability((prev)=>{
+        return [slot]
+      });
+      console.log(slot);
+      // setUploading(true);
+      // const timeSlot = {};
+      // timeSlot.startAt = format(startTime,'HH:mm',{locale:enGB});
+      // timeSlot.durationMins = duration
+      // timeSlot.cost = {
+      //   currencyCode:"£",
+      //   major:Math.floor(cost),
+      //   minor:cost-Math.floor(cost)
+      // };
+      // timeSlot.status="available";
+      // timeSlot.timeZone = "GMT";
+      // timeSlot.note = note;
+      // const fetchOptions = {
+      //   method:"POST",
+      //   headers:{
+      //     "Content-Type":"application/json"
+      //   },
+      //   body:JSON.stringify({date:format(date, 'yyyy/MM/dd', { locale: enGB }),timeSlot:timeSlot})
+      // }
+      // fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}/availability`,fetchOptions).then(response=>{
+      //   if(response.ok){
+      //     return response.json();
+      //   }
+      //   if(response.status===400&&response.message==="booking already exists for this time, can not be added"){
+      //       toast.current.show({severity: 'error', summary: 'Slot already exists', detail: 'Sorry please choose another slot',life:5000});
+      //       setLoading(false);
+      //   }
+      // }).then(jsonResponse=>{
+      //   return jsonResponse;
+      // }).then(res=>{
+      //   toast1.current.show({severity: 'success', summary: 'Success', detail: `The slot was added to ${format(date,"yyyy/MM/dd",{locale:enGB})}`});
+      //   setStartTime(new Date("Mon Jan 11 2021 8:00:01 GMT+0530 (India Standard Time)"));
+      //   setEndTime(new Date("Mon Jan 11 2021 8:20:01 GMT+0530 (India Standard Time)"));
+      //   setLoading(false);
+      // })
+    }
+    const listOptionTemplate = (option) => {
+      return (
+          <div className="listOption-container">
+              <div>{option.startTime}</div>
+          </div>
+      );
+  }
     return (
         <> 
           <Toast ref={toast} position="bottom-right"></Toast>
-          {auth.user && auth.idToken ? 
+          {auth.idToken ? 
             <section className="section">
             <Container style={{ maxWidth: '80vw', margin: '0 auto' }}>
                 <Row style={{ display: 'flex', justifyContent: 'center' }}>
@@ -300,7 +317,7 @@ function AddAvailability() {
                             locale={enGB}
                             date={date}
                             onDateChange={(date)=>{
-                              fillSlots(date);
+                              // fillSlots(date);
                               setDate(date);
                             }}
                         />
@@ -320,39 +337,12 @@ function AddAvailability() {
                             <FormGroup className="form-group-container">
                                 <label htmlFor="startTime">Start Time</label>
                                 <Calendar id="startTime" value={startTime} onChange={(e) => {
-                                    console.log(e.value);
-                                    setStartTime(e.value)}}  timeOnly hourFormat="24" stepMinute={30} className="w-75 ml-2"/>
+                                    setStartTime(e.value)}}  timeOnly hourFormat="24" stepMinute={20} className="w-75 ml-2"/>
                             </FormGroup>
                             <FormGroup className="form-group-container">
-                                {/* <label htmlFor="endTime">End Time</label>
-                                <Calendar id="endTime" value={endTime} onChange={(e) => setEndTime(e.value)} timeOnly hourFormat="24" stepMinute={30}/> */}
-                                <label htmlFor="endTime">Duration</label>
-                                <InputNumber id="horizontal" value={duration} onValueChange={(e) => setDuration(e.value)} showButtons buttonLayout="horizontal" step={15} suffix=" minutes"
-                                    decrementButtonClassName="p-button-danger" incrementButtonClassName="p-button-success" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" className="w-75 ml-3"/>
-                            </FormGroup>
-                            <FormGroup className="form-group-container">
-                                {/* <label htmlFor="endTime">End Time</label>
-                                <Calendar id="endTime" value={endTime} onChange={(e) => setEndTime(e.value)} timeOnly hourFormat="24" stepMinute={30}/> */}
-                                <label htmlFor="endTime">Cost</label>
-                                <InputNumber id="currency-us" value={cost} onValueChange={(e) => {
-                                    console.log(e.value)
-                                    setCost(e.value)}} mode="currency" currency="GBP" locale="en-US" className="w-75 ml-5" />
-                            </FormGroup>
-                            <FormGroup className="form-group-container">
-                                <Label>
-                                    Note
-                                </Label>
-                                <textarea
-                                    name="comments"
-                                    id="comments"
-                                    rows="2"
-                                    className="form-control pl-3 w-75 ml-5"
-                                    placeholder="Enter session note here"
-                                    value={note}
-                                    onChange={(event)=>{
-                                        setNote(event.target.value);
-                                    }}
-                                ></textarea>
+                                <label htmlFor="startTime">End Time</label>
+                                <Calendar id="startTime" value={endTime} onChange={(e) => {
+                                    setEndTime(e.value)}}  timeOnly hourFormat="24" stepMinute={20} className="w-75 ml-2"/>
                             </FormGroup>
                             {uploading?
                             <Spinner fill="black"></Spinner>
@@ -364,17 +354,55 @@ function AddAvailability() {
                         <TabPanel header="View Slots">
                             <div className="view-slot-container">
                                 {loading?<Spinner color="#ff5001" style={{margin:"10px auto"}}></Spinner>:
-                                <div
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    border: '1px solid rgba(0,0,0,0.1)'
-                                }}
-                                >
-                                    <ul className="timeSlotList mx-5" id="morningList"></ul>
-                                    <ul className="timeSlotList mx-5" id="afternoonList"></ul>
-                                    <ul className="timeSlotList mx-5" id="eveningList"></ul>
+                                <div className="showAvailability-container">
+                                  <div className="timeSlot-container">
+                                    <div className="p-field-radiobutton">
+                                        <RadioButton inputId="20minuteSlot" name="timeSlot" value={20} onChange={handleDurationChange} checked={activeTime === 20} />
+                                        <label htmlFor="20minuteSlot">20 minutes</label>
+                                    </div>
+                                    <div className="p-field-radiobutton">
+                                        <RadioButton inputId="40minuteSlot" name="timeSlot" value={40} onChange={handleDurationChange} checked={activeTime === 40} />
+                                        <label htmlFor="40minuteSlot">40 minutes</label>
+                                    </div>
+                                    <div className="p-field-radiobutton">
+                                        <RadioButton inputId="60minuteSlot" name="timeSlot" value={60} onChange={handleDurationChange} checked={activeTime === 60} />
+                                        <label htmlFor="city3">60 minutes</label>
+                                    </div>
+                                  </div>
+                                  <div className="list-container">
+                                    <div className="morning-list">
+                                      <h5>Morning</h5>
+                                      <ListBox options={morningSlots.display} filter optionLabel="startTime"
+                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '250px'}} />
+                                    </div>
+                                    <div className="afternoon-list">
+                                      <h5>Afternoon</h5>
+                                      <ListBox options={afternoonSlots.display} filter optionLabel="startTime"
+                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '250px'}} />
+                                    </div>
+                                    <div className="evening-list">
+                                      <h5>Evening</h5>
+                                      <ListBox  options={eveningSlots.display} filter optionLabel="startTime"
+                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '250px'}} />
+                                    </div>
+
+                                  </div>
+
                                 </div>
+
+                                
+
+                                // <div
+                                // style={{
+                                //     display: 'flex',
+                                //     justifyContent: 'center',
+                                //     border: '1px solid rgba(0,0,0,0.1)'
+                                // }}
+                                // >
+                                //     <ul className="timeSlotList mx-5" id="morningList"></ul>
+                                //     <ul className="timeSlotList mx-5" id="afternoonList"></ul>
+                                //     <ul className="timeSlotList mx-5" id="eveningList"></ul>
+                                // </div>
                                 }
                             </div>
                             

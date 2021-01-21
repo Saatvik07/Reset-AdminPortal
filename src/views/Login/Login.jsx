@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 import TextInput from './TextInput.jsx';
 import { Link, Redirect } from 'react-router-dom';
-import { loginAction } from '../../Store/ActionCreators/auth';
+import { loginAction} from '../../Store/ActionCreators/auth';
 import './style.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearAlert, setAlert } from '../../Store/ActionCreators/alert';

@@ -18,6 +18,7 @@ import { newUserLoginAction } from '../../Store/ActionCreators/auth';
 import './style.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearAlert, setAlert } from '../../Store/ActionCreators/alert';
+import Unauthorized from '../Unauthorized/Unauthorized';
 function NewAdminLogin() {
     const dispatch = useDispatch();
     const auth = useSelector((state) => state.auth);
@@ -54,6 +55,7 @@ function NewAdminLogin() {
     }
     return (
         <div>
+            {auth.user?
             <Container className="mb-100 mt-150">
                 {alert.isAlert && (
                 <Row className="mb-2">
@@ -134,6 +136,10 @@ function NewAdminLogin() {
                 )}
                 </Formik>
             </Container>
+            :
+            <Unauthorized/>
+            }
+            
         </div>
     )
 }

@@ -83,8 +83,8 @@ export const getUser = () => {
   return async (dispatch) => {
     dispatch({ type: ActionTypes.UPDATE_USER_REQUEST });
     return await Auth.currentAuthenticatedUser()
-      .then((res) => {
-        dispatch({ type: ActionTypes.UPDATE_USER_SUCCESS, payload: res });
+      .then(async(res) => {
+        dispatch({ type: ActionTypes.UPDATE_USER_SUCCESS, payload: res, idToken:(await Auth.currentSession()).getIdToken().getJwtToken()});
       })
       .catch((err) => {
         dispatch({ type: ActionTypes.UPDATE_USER_FAILED, error: err });

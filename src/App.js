@@ -1,14 +1,14 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable max-classes-per-file */
 // import './App.scss';
-import React, { Suspense } from 'react';
+import React, { Suspense,useEffect,useState } from 'react';
 import {
   Route,
   Switch,
   BrowserRouter as Router,
   withRouter
 } from 'react-router-dom';
-
+import {useDispatch} from "react-redux";
 import Layout from './views/Layout/Layout';
 import routes from './routes';
 import './styles/helper.css';
@@ -16,6 +16,7 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.css';
 import 'primeflex/primeflex.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
+import {getUser} from "./Store/ActionCreators/auth"
 function withLayout(WrappedComponent) {
   return class extends React.PureComponent {
     render() {
@@ -40,12 +41,22 @@ const Loader = () => (
 );
 
 function App() {
+  const [loading,setLoading] = useState(true);
+  const dispatch = useDispatch();
+  useEffect(()=>{
+    dispatch(getUser()).then(()=>{
+      setLoading(false);     
+    });
+  },[])
   return (
     <>
       <Router>
         <Suspense fallback={Loader()}>
           <Switch>
-            {routes.map((route, idx) =>
+            {loading?
+              <Loader/>
+            :
+            routes.map((route, idx) =>
               route.isWithoutLayout ? (
                 <Route
                   path={route.path}
@@ -61,7 +72,8 @@ function App() {
                   key={idx}
                 />
               )
-            )}
+            )
+            }
           </Switch>
         </Suspense>
       </Router>

@@ -20,10 +20,10 @@ const authReducer = (state = initState, action) => {
       return { ...state, error: action.error, user: null, isLoading: false };
 
     case ActionTypes.LOGOUT_REQUEST:
-      return { ...state, error: '', user: null, isLoading: true };
+      return { ...state, error: '', user: null,idToken:null, isLoading: true };
 
     case ActionTypes.LOGOUT_SUCCESS:
-      return { ...state, error: '', user: null, isLoading: false };
+      return { ...state, error: '', user: null,idToken:null, isLoading: false };
 
     case ActionTypes.LOGOUT_FAILED:
       return { ...state, error: action.error, isLoading: false };
@@ -46,7 +46,7 @@ const authReducer = (state = initState, action) => {
       return { ...state, error: '', isLoading: true };
 
     case ActionTypes.UPDATE_USER_SUCCESS:
-      return { ...state, error: '', user: action.payload, isLoading: false };
+      return { ...state, error: '', user: action.payload, isLoading: false,idToken:action.idToken};
 
     case ActionTypes.UPDATE_USER_FAILED:
       return { ...state, error: '', isLoading: false };
