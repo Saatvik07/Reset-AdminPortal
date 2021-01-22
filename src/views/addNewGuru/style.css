@@ -41,7 +41,14 @@
 	background-color: var(--primary-color);
 	color: var(--primary-color-text);
 }
-
+.warning-footer-container {
+	width: 100%;
+	margin: 20px 0;
+	padding: 0 20px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
 .multiselect-demo .multiselect-custom .country-item-value img.flag {
 	width: 17px;
 }
@@ -76,7 +83,6 @@ input[type="file"]::-webkit-file-upload-button {
 	background: linear-gradient(-63deg, #ff1b01 5%, #ff8c00 100%);
 	color: white;
 	border: 1px solid #ff5001 !important;
-	margin-right: 20px;
 }
 input[type="file"]::-webkit-file-upload-button:active {
 	border: none;
@@ -133,4 +139,35 @@ input[type="file"]::-webkit-file-upload-button:active {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
+}
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+	border-color: #ff5001 !important;
+	color: #ff5001;
+}
+.p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
+	box-shadow: 0 0 0 0.2rem #ff5001;
+}
+.p-tabview-nav {
+	display: flex;
+	justify-content: center;
+}
+.accept-warning-btn {
+	background: #ff5001 !important;
+	border-radius: 200px;
+	border: 1px solid #ff5001 !important;
+	margin: 0 5px;
+	transition: all 0.3s;
+}
+.accept-warning-btn:hover {
+	background: #fff !important;
+	color: #ff5001 !important;
+}
+.decline-warning-btn {
+	background-color: #fff !important;
+	border: none !important;
+	color: #191b1e !important;
+	margin: 0 5px;
+}
+.decline-warning-btn:hover {
+	color: #ff5001 !important;
 }

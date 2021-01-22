@@ -129,9 +129,7 @@ function AddAvailability() {
             fillSlots().then(()=>{
               setActiveTime(20);
               setLoading(false);
-            });
-              
-              
+            });  
           },2000);
         // fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}/availability`).then(response=>{
         //     if(response.ok){

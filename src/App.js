@@ -16,7 +16,10 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.css';
 import 'primeflex/primeflex.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
-import {getUser} from "./Store/ActionCreators/auth"
+import {getUser} from "./Store/ActionCreators/auth";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+library.add(fab);
 function withLayout(WrappedComponent) {
   return class extends React.PureComponent {
     render() {

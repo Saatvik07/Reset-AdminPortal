@@ -40,7 +40,7 @@ export default function Login() {
         if (auth.error !== '') {
             dispatch(setAlert({ message: auth.error, color: 'danger' }));
         } else if (auth.user) {
-            dispatch(setAlert({ message: 'Successful login, please change your password', color: 'success' }));
+            dispatch(setAlert({ message: 'Successful login', color: 'success' }));
             
         }
         }

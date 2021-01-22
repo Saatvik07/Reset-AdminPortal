@@ -1,0 +1,42 @@
+{
+    "body":[
+        {
+            "GuruID": "9502da86-6f85-48b8-88e6-4538b2bbab9d",
+            "Date": "2021/01/15",
+            "timeSlots": [
+                {
+                    "startTime":"Mon Jan 11 2021 10:20:01 GMT+0530 (India Standard Time)",
+                    "endTime":"Mon Jan 11 2021 11:20:01 GMT+0530 (India Standard Time)",
+                    "timeSlots":[
+                        {"startTime": "8:00", "startHour": 8, "startMinute": 0, "status": "available"},
+                        {"startTime": "8:20", "startHour": 8, "startMinute": 20, "status": "available"},
+                        {"startTime": "8:40", "startHour": 8, "startMinute": 40, "status": "available"},
+                        {"startTime": "9:00", "startHour": 9, "startMinute": 0, "status": "available"},
+                        {"startTime": "9:20", "startHour": 9, "startMinute": 20, "status": "available"},
+                        {"startTime": "9:40", "startHour": 9,"startMinute": 40, "status": "available"},
+                        {"startTime": "10:00", "startHour": 10, "startMinute": 0, "status": "available"}
+                    ]
+                }
+            ]
+        },
+        {
+            "GuruID": "9502da86-6f85-48b8-88e6-4538b2bbab9d",
+            "Date": "2021/01/16",
+            "timeSlots": [
+                {
+                    "startTime":"Mon Jan 11 2021 10:20:01 GMT+0530 (India Standard Time)",
+                    "endTime":"Mon Jan 11 2021 11:20:01 GMT+0530 (India Standard Time)",
+                    "timeSlots":[
+                        {"startTime": "8:00", "startHour": 8, "startMinute": 0, "status": "available"},
+                        {"startTime": "8:20", "startHour": 8, "startMinute": 20, "status": "available"},
+                        {"startTime": "8:40", "startHour": 8, "startMinute": 40, "status": "available"},
+                        {"startTime": "9:00", "startHour": 9, "startMinute": 0, "status": "available"},
+                        {"startTime": "9:20", "startHour": 9, "startMinute": 20, "status": "available"},
+                        {"startTime": "9:40", "startHour": 9,"startMinute": 40, "status": "available"},
+                        {"startTime": "10:00", "startHour": 10, "startMinute": 0, "status": "available"}
+                    ]
+                }
+            ]
+        }
+    ]
+}
