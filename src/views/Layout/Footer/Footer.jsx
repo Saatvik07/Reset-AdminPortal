@@ -114,7 +114,7 @@ function Footer() {
 
             <Col sm="6" className="mt-4 mt-sm-0 pt-2 pt-sm-0">
               <div className="text-sm-right">
-                <p className="mb-0">Website by Saatvik Bhatnagar</p>
+                <p className="mb-0">Web platform by Staunch Software Consultancy Limited</p>
               </div>
             </Col>
           </Row>
