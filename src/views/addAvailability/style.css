@@ -232,3 +232,6 @@
 	border-color: #ff5001 !important;
 	background: #ff5001 !important;
 }
+.noSlot-label {
+	color: lightgray;
+}

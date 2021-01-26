@@ -24,59 +24,26 @@ function ViewAllGurus(){
   const auth = useSelector(state => state.auth)
   const dispatch = useDispatch();
   const [loading,setLoading] = useState(true);
-  const [gurus,setGurus] = useState([
-    {
-      id: 1,
-      image: andrew,
-      name: 'Andrew Julien',
-      keyword: 'Personal Trainer',
-      bio:
-        'Andrew Julien is a London based high-performance coach. It’s easy to understand why his philosophy is “go hard before home time”… Andrew believes if you truly want…'
-    },
-    {
-      id: 2,
-      image: jon,
-      name: 'Jon Aronoff',
-      keyword: 'Life Coach',
-      bio:
-        'Jonathan Aronoff is an Internationally Certified Coach, a licensed psychologist, and a psychoanalyst. After 30 years of playing and coaching competitive soccer he…'
-    },
-    {
-      id: 3,
-      image: luke,
-      name: 'Luke Rees',
-      keyword: 'Motivational Coach',
-      bio:
-        'Luke Rees is a young multi-award-winning International Motivational Speaker, UK Young Leader and Mental Health Ambassador. His contagious energy and passion…'
-    },
-    {
-      id: 4,
-      image: nikki,
-      name: 'Nikki Kiyimba',
-      keyword: 'Holistic Therapy',
-      bio:
-        'Dr Nikki Kiyimba is a Chartered Clinical Psychologist and Senior University Lecturer. She has specialised in psychological trauma and worked with many people with…'
-    },
-    {
-      id: 5,
-      image: abi,
-      name: 'Abi Adams',
-      keyword: 'Movement Therapy',
-      bio:
-        'Abi Adams is an Emotional Movement Therapist who empowers people through health and lifestyle choices. Using a mix of yoga, kinesiology, bioenergy and physical…'
-    },
-    {
-      id: 6,
-      image: paola,
-      name: 'Paola Langella',
-      keyword: 'Nutritionist,Pilates Instructor',
-      bio:
-        'Paola Langella is a Pilates Instructor & Health Coach Nutritionist. She grew up in Italy where she studied ballet for 10 years. During her studies in the UK, whilst…'
-    }
-  ]);
+  const [gurus,setGurus] = useState(null);
+  const fetchGurus = async()=>{
+    fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus`).then(response=>{
+        if(response.ok){
+            return response.json();
+        }
+    }).then(jsonResponse=>{
+        return jsonResponse;
+    })
+    .then(result=>{
+        console.log(result.body);
+        setGurus(result.body);
+        setLoading(false);
+    }).catch(error=>{
+        console.log(error);
+    });
+  }
   useEffect(()=>{
     dispatch(getUser()).then(()=>{
-      setLoading(false);
+      fetchGurus();
     });
   },[])
     return (
@@ -87,13 +54,14 @@ function ViewAllGurus(){
               <section>
                 <Container>
                   <Row>
-                    {gurus.map((guru, key) => (
+                    {gurus?
+                    gurus.map((guru, key) => (
                       <Col lg="4" md="6" className="mb-4 pb-2" key={key} name="blog">
                         <Card className="blog rounded border-0 shadow overflow-hidden">
                           <div className="position-relative">
                             <CardImg
                               top
-                              src={guru.image}
+                              src={guru.profilePhoto}
                               className="rounded-top"
                               alt=""
                             />
@@ -102,44 +70,38 @@ function ViewAllGurus(){
                           <CardBody className="content">
                             <h5>
                               <Link to="#" className="card-title title text-dark">
-                                {guru.name}
+                                {`${guru.firstName} ${guru.lastName}`}
                               </Link>
                             </h5>
-                            <h6
-                              style={{
-                                color: '#ff5001',
-                                textTransform: 'capitalize'
-                              }}
+                            {/* <div
+                              className="keyword-container"
                             >
-                              {guru.keyword}
-                            </h6>
+                              {guru.keywords.map((keyword)=>{
+                                return <h6 className="keyword">
+                                  {keyword.name}
+                                </h6>;
+                              })}
+                            </div> */}
                             <p
-                              style={{
-                                color: '#0f0f0f',
-                                fontSize: '16px',
-                                marginBottom: '40px',
-                                padding: '20px 0px',
-                                borderTop: '1px solid lightgray',
-                                borderBottom: '1px solid lightgray'
-                              }}
+                              className="bio"
                             >
                               {guru.bio}
                             </p>
                             <div className="btn-container">
                               <Link
-                                  to={`/update-guru?id=2bf818e6-d0ff-4cb9-896d-0cd6e26d899b`}
+                                  to={`/update-guru?id=${guru.guruID}`}
                                   className="view-profile-btn"
                               >
                                   <FeatherIcon icon="user-plus" />
                               </Link>
                               <Link
-                                  to={`/add-availability?id=2bf818e6-d0ff-4cb9-896d-0cd6e26d899b`}
+                                  to={`/add-availability?id=${guru.guruID}`}
                                   className="view-profile-btn"
                               >
                                   <FeatherIcon icon="calendar"/>
                               </Link>
                               <Link
-                                  to={`/add-new-video?id=2bf818e6-d0ff-4cb9-896d-0cd6e26d899b`}
+                                  to={`/add-new-video?id=${guru.guruID}`}
                                   className="view-profile-btn"
                               >
                                   <FeatherIcon icon="video"/>
@@ -147,18 +109,21 @@ function ViewAllGurus(){
                             </div>
                             
                           </CardBody>
-                          <div className="author">
-                            <small className="text-light user d-block">
-                              <i className="mdi mdi-account"></i> {guru.id}
-                            </small>
-                            <small className="text-light date">
-                              <i className="mdi mdi-calendar-check"></i>{' '}
-                              {guru.keyword}
-                            </small>
-                          </div>
                         </Card>
                       </Col>
-                    ))}
+                    ))
+                    :
+                    <div className="loader-container">
+                        <div id="preloader">
+                            <div id="status">
+                            <div className="spinner">
+                                <div className="double-bounce1" />
+                                <div className="double-bounce2" />
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
       
                     {/* <Col xs="12">
                       <Pagination listClassName="justify-content-center mb-0">

@@ -45,3 +45,18 @@
 	justify-content: space-evenly;
 	align-items: center;
 }
+.keyword-container {
+	display: flex;
+	flex-wrap: wrap;
+}
+.keyword {
+	margin: 10px;
+}
+.bio {
+	color: #0f0f0f;
+	font-size: 16px;
+	margin-bottom: 40px;
+	padding: 20px 0px;
+	border-top: 1px solid lightgray;
+	border-bottom: 1px solid lightgray;
+}

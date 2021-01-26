@@ -32,126 +32,79 @@ function AddAvailability() {
     const [eveningSlots,setEveningSlots] = useState({
       display:[],
       all:[],
-    }); 
-    const [id,setId] = useState(803615196);
+    });
     const [startTime,setStartTime] = useState(new Date("Mon Jan 11 2021 8:00:01 GMT+0530 (India Standard Time)"));
     const [endTime,setEndTime] = useState(new Date("Mon Jan 11 2021 8:20:01 GMT+0530 (India Standard Time)"));
     const [loading,setLoading] = useState(false);
     const [uploading,setUploading] = useState(false);
     const [activeTime,setActiveTime] = useState(20);
     const [activeIndex,setActiveIndex] = useState(0);
-    const dt = useRef(null);
-    const fillSlots = async(input)=>{
-        try{
-            const morning=[],afternoon =[],evening=[];
-            availability.forEach((slot)=>{
-              slot.slots.forEach((timeSlot)=>{
-                let hour = parseInt(timeSlot.startTime.split(":")[0],10);
+    const fillSlots = async(selectedDate)=>{
+      const morning=[],afternoon =[],evening=[];
+      if(selectedDate){
+        availability.forEach((slot)=>{
+          console.log(slot,selectedDate);
+          if(slot.Date===format(selectedDate,"yyyy/MM/dd",{locale:enGB})){
+            slot.blocks.forEach((timeSlot)=>{
+              timeSlot.timeSlots.forEach((ts)=>{
+                let hour = parseInt(ts.startTime.split(":")[0],10);
                 if(hour<12){
-                  morning.push(timeSlot);
+                  morning.push(ts);
                 }
                 else if (hour>=12 &&hour<17){
-                  afternoon.push(timeSlot);
+                  afternoon.push(ts);
                 }
                 else{
-                  evening.push(timeSlot);
+                  evening.push(ts);
                 }
               })
-            });
-            console.log(morning,afternoon,evening);
-            setMorningSlots({
-              display:morning,
-              all:morning,
-            });
-            setAfternoonSlots({
-              display:afternoon,
-              all:afternoon,
-            });
-            setEveningSlots({
-              display:evening,
-              all:evening
-            });
-            // document.getElementById('morningList').innerHTML = '';
-            // document.getElementById('afternoonList').innerHTML = '';
-            // document.getElementById('eveningList').innerHTML = '';
-            // let selected=date;
-            // if(input){
-            //   selected=input;
-            // }
-            // availability.forEach((a) => {
-            // if (a.Date === format(selected, 'yyyy/MM/dd', { locale: enGB })) {
-            //     const listHeading = document.createElement('li');
-            //     listHeading.className = 'heading';
-            //     listHeading.textContent = 'Morning';
-            //     document.getElementById('morningList').appendChild(listHeading);
-            //     const listHeading1 = document.createElement('li');
-            //     listHeading1.className = 'heading';
-            //     listHeading1.textContent = 'Afternoon';
-            //     document.getElementById('afternoonList').appendChild(listHeading1);
-            //     const listHeading2 = document.createElement('li');
-            //     listHeading2.className = 'heading';
-            //     listHeading2.textContent = 'Evening';
-            //     document.getElementById('eveningList').appendChild(listHeading2);
-            //     a.timeSlots.forEach((timeSlot) => {
-            //     let listName;
-            //     if (timeSlot.startAt.split(':')[0] <= 11) {
-            //         listName = document.getElementById('morningList');
-            //     } else if (
-            //         timeSlot.startAt.split(':')[0] >= 12 &&
-            //         timeSlot.startAt.split(':')[0] <= 16
-            //     ) {
-            //         listName = document.getElementById('afternoonList');
-            //     } else {
-            //         listName = document.getElementById('eveningList');
-            //     }
-            //     const listElement = document.createElement('li');
-            //     listElement.className = 'timeSlot';
-            //     listElement.onclick = () => {
-            //         listElement.classList.contains('active')
-            //         ? listElement.classList.remove('active')
-            //         : listElement.classList.add('active');
-            //     };
-            //     listElement.textContent = timeSlot.startAt;
-            //     listName.appendChild(listElement);
-            //     });
-            // }
-        // });
-        }
-        catch(e){
-            console.log(e);
-        }
+              
+            })
+          }
+        });
+      }
+      
+      console.log(morning,afternoon,evening);
+      setMorningSlots({
+        display:morning,
+        all:morning,
+      });
+      setAfternoonSlots({
+        display:afternoon,
+        all:afternoon,
+      });
+      setEveningSlots({
+        display:evening,
+        all:evening
+      });
         
     }
-    const fetchAvailability = () =>{
+    const fetchAvailability = async() =>{
         setLoading(true);
-        //setId(query.get("id"));
-          setTimeout(()=>{
-            fillSlots().then(()=>{
-              setActiveTime(20);
-              setLoading(false);
-            });  
-          },2000);
-        // fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}/availability`).then(response=>{
-        //     if(response.ok){
-        //         return response.json();
-        //     }
-        // }).then(jsonResponse=>{
-        //     return jsonResponse;
-        // })
-        // .then(result=>{
-        //     setAvailability(result.body);
+        // setTimeout(()=>{
+        //   fillSlots().then(()=>{
+        //     setActiveTime(20);
         //     setLoading(false);
-        //     fillSlots();
-        // }).catch(error=>{
-        //     console.log(error);
-        // });
+        //   });  
+        // },2000);
+        const id =  query.get("id");
+        return fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}/availability`).then(response=>{
+            if(response.ok){
+                return response.json();
+            }
+        }).then(jsonResponse=>{
+            return jsonResponse;
+        })
+        .then(result=>{
+          console.log("Fetched");
+            setAvailability(result.body);
+            return true;
+        }).catch(error=>{
+            console.log(error);
+        });
     }
-    useEffect(()=>{
-        //setId(query.get("id"));
-        fetchAvailability();
-    },[]);
     const handleDurationChange = (event)=>{
-      setLoading(true);
+      setLoading(true)
       setActiveTime(event.value);
       const duration = event.value;
       const callback = (slot)=>{
@@ -167,10 +120,13 @@ function AddAvailability() {
               endHour+=1;
             }
             availability.forEach((a)=>{
-              a.slots.forEach(timeSlot=>{
-                if((timeSlot.startHour===endHour&&timeSlot.startMinute===endMinute)||(endHour===parseInt(format(a.endTime,"HH:mm",{locale:enGB}).split(":")[0],10)&&endMinute===parseInt(format(a.endTime,"HH:mm",{locale:enGB}).split(":")[1],10))){
-                  result=true;
-                }
+              a.blocks.forEach(timeSlot=>{
+                timeSlot.timeSlots.forEach((ts)=>{
+                  console.log(timeSlot.endTime);
+                  if((ts.startHour===endHour&&ts.startMinute===endMinute)||(endHour===parseInt(timeSlot.endTime.split(":")[0],10)&&endMinute===parseInt(timeSlot.endTime.split(":")[1],10))){
+                    result=true;
+                  }
+                })
               })
             })
             if(!result){
@@ -186,11 +142,12 @@ function AddAvailability() {
               endHr+=1;
             }
             availability.forEach((a)=>{
-              a.slots.forEach(timeSlot=>{
-                console.log(timeSlot.startTime,a.endTime);
-                if((timeSlot.startHour===endHr&&timeSlot.startMinute===endMin)||(endHr===parseInt(format(a.endTime,"HH:mm",{locale:enGB}).split(":")[0],10)&&endMin===parseInt(format(a.endTime,"HH:mm",{locale:enGB}).split(":")[1],10))){
-                  result2=true;
-                }
+              a.blocks.forEach(timeSlot=>{
+                timeSlot.timeSlots.forEach((ts)=>{
+                  if((ts.startHour===endHr&&ts.startMinute===endMin)||(endHr===parseInt(timeSlot.endTime.split(":")[0],10)&&endMin===parseInt(timeSlot.endTime.split(":")[1],10))){
+                    result2=true;
+                  }
+                })
               })
             })
             if(!result2){
@@ -246,63 +203,64 @@ function AddAvailability() {
           startMinute=0;
         }
       }
-      const slot = {
-        startTime:startTime,
-        endTime:endTime,
-        slots:timeSlotList
+      const block = {
+        startTime:format(startTime,"HH:mm",{locale:enGB}),
+        endTime:format(endTime,"HH:mm",{locale:enGB}),
+        timeSlots:timeSlotList
       }
-      // let arr = [...availability];
-      // arr.push(slot);
-      setAvailability((prev)=>{
-        return [slot]
-      });
-      console.log(slot);
-      // setUploading(true);
-      // const timeSlot = {};
-      // timeSlot.startAt = format(startTime,'HH:mm',{locale:enGB});
-      // timeSlot.durationMins = duration
-      // timeSlot.cost = {
-      //   currencyCode:"£",
-      //   major:Math.floor(cost),
-      //   minor:cost-Math.floor(cost)
-      // };
-      // timeSlot.status="available";
-      // timeSlot.timeZone = "GMT";
-      // timeSlot.note = note;
-      // const fetchOptions = {
-      //   method:"POST",
-      //   headers:{
-      //     "Content-Type":"application/json"
-      //   },
-      //   body:JSON.stringify({date:format(date, 'yyyy/MM/dd', { locale: enGB }),timeSlot:timeSlot})
-      // }
-      // fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}/availability`,fetchOptions).then(response=>{
-      //   if(response.ok){
-      //     return response.json();
-      //   }
-      //   if(response.status===400&&response.message==="booking already exists for this time, can not be added"){
-      //       toast.current.show({severity: 'error', summary: 'Slot already exists', detail: 'Sorry please choose another slot',life:5000});
-      //       setLoading(false);
-      //   }
-      // }).then(jsonResponse=>{
-      //   return jsonResponse;
-      // }).then(res=>{
-      //   toast1.current.show({severity: 'success', summary: 'Success', detail: `The slot was added to ${format(date,"yyyy/MM/dd",{locale:enGB})}`});
-      //   setStartTime(new Date("Mon Jan 11 2021 8:00:01 GMT+0530 (India Standard Time)"));
-      //   setEndTime(new Date("Mon Jan 11 2021 8:20:01 GMT+0530 (India Standard Time)"));
-      //   setLoading(false);
-      // })
+      setUploading(true);
+      const fetchOptions = {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({timeZone:"GMT",date:format(date,'yyyy/MM/dd',{locale:enGB}),block:block})
+      }
+      console.log({timeZone:"GMT",date:format(date,'yyyy/MM/dd',{locale:enGB}),block:block});
+      const id = query.get('id');
+      fetch(`https://j6lw75i817.execute-api.us-east-2.amazonaws.com/v1/gurus/${id}/availability`,fetchOptions).then(response=>{
+        if(response.ok){
+          return response.json();
+        }
+        if(response.status===400&&response.message==="booking already exists for this time, can not be added"){
+            toast.current.show({severity: 'error', summary: 'Slot already exists', detail: 'Sorry please choose another slot',life:5000});
+            setUploading(false);
+        }
+      }).then(jsonResponse=>{
+        return jsonResponse;
+      }).then(res=>{
+        toast1.current.show({severity: 'success', summary: 'Success', detail: `The slot was added to ${format(date,"yyyy/MM/dd",{locale:enGB})}`});
+        setStartTime(new Date("Mon Jan 11 2021 8:00:01 GMT+0530 (India Standard Time)"));
+        setEndTime(new Date("Mon Jan 11 2021 8:20:01 GMT+0530 (India Standard Time)"));
+        setUploading(false);
+      })
     }
     const listOptionTemplate = (option) => {
-      return (
+      if(option){
+        return (
           <div className="listOption-container">
               <div>{option.startTime}</div>
           </div>
-      );
-  }
+        );
+      }
+      return  <div className="noSlot-label">No slot available</div>
+    }
+    const changeDate = async(date)=>{
+      const fetched= await fetchAvailability();
+      if(fetched){
+        fillSlots(date);
+        setActiveTime(20);
+        setLoading(false);
+        if(date){
+                  
+        setDate(date);
+        }
+      }
+    }
     return (
         <> 
           <Toast ref={toast} position="bottom-right"></Toast>
+          <Toast ref={toast1} position="bottom-right"></Toast>
           {auth.idToken ? 
             <section className="section">
             <Container style={{ maxWidth: '80vw', margin: '0 auto' }}>
@@ -314,22 +272,20 @@ function AddAvailability() {
                         <DatePickerCalendar
                             locale={enGB}
                             date={date}
-                            onDateChange={(date)=>{
-                              // fillSlots(date);
-                              setDate(date);
-                            }}
+                            onDateChange={changeDate}
                         />
                     </div>
                     
                 </Col>
-                <Col md={6} sm={12} className="form-container">
+                <Col md={{size:6,offset:1}} sm={12} className="form-container">
                     <h4 className="mt-3">{date?`Selected Date: ${format(date, 'yyyy/MM/dd', { locale: enGB })}`:"No date selected"}</h4>
                     {date?
-                    <TabView activeIndex={activeIndex} onTabChange={(e)=>{
+                    <TabView activeIndex={activeIndex} onTabChange={async (e)=>{
                         if(e.index===1){
-                            fetchAvailability();
+                          changeDate();
                         }
                         setActiveIndex(e.index);
+                        
                     }}>
                         <TabPanel header="Add a slot">
                             <FormGroup className="form-group-container">
@@ -371,17 +327,17 @@ function AddAvailability() {
                                     <div className="morning-list">
                                       <h5>Morning</h5>
                                       <ListBox options={morningSlots.display} filter optionLabel="startTime"
-                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '250px'}} />
+                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '150px'}} />
                                     </div>
                                     <div className="afternoon-list">
                                       <h5>Afternoon</h5>
                                       <ListBox options={afternoonSlots.display} filter optionLabel="startTime"
-                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '250px'}} />
+                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '150px'}} />
                                     </div>
                                     <div className="evening-list">
                                       <h5>Evening</h5>
                                       <ListBox  options={eveningSlots.display} filter optionLabel="startTime"
-                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '250px'}} />
+                                        itemTemplate={listOptionTemplate} style={{width: '15rem'}} listStyle={{height: '150px'}} />
                                     </div>
 
                                   </div>
