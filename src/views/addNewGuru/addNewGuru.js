@@ -502,7 +502,7 @@ function AddNewGuru() {
                                         setActiveIndex(e.index)
                                     }
                                     
-                                }}>
+                                }} className="addNewGuru-tabview">
                                     <TabPanel header="Add Guru Credentials">
                                     <Row>
                                         <Col md={6}>

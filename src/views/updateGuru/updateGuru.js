@@ -708,7 +708,7 @@ function UpdateGuru() {
                                     <TabView activeIndex={activeIndex} onTabChange={(event)=>{
                                         setChange([]);
                                         setActiveIndex(event.index);
-                                    }}>
+                                    }} className="update-tabview">
                                         <TabPanel header="Data">
                                             <Row>
                                                 <Col md={6}>

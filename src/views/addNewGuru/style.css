@@ -87,7 +87,9 @@ input[type="file"]::-webkit-file-upload-button {
 input[type="file"]::-webkit-file-upload-button:active {
 	border: none;
 }
-
+.addNewGuru-tabview {
+	width: 100%;
+}
 #guru-profile,
 #guru-intro-thumbnail,
 #guru-intro-video {

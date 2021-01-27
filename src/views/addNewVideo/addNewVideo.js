@@ -275,7 +275,7 @@ function AddNewVideo() {
             <Toast ref={toast} position="bottom-right"></Toast>
             <Toast ref={toast1} position="bottom-right"></Toast>
             <Toast ref={toast2} position="bottom-right"></Toast>
-            <Toast ref={toast2} position="bottom-right"></Toast>
+            <Toast ref={toast3} position="bottom-right"></Toast>
             {auth.idToken?
                 !loading ? 
                 <>

@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useRef} from 'react'
+import React, { useEffect,useState, useRef} from 'react'
 import { Container, Row, Col, FormGroup, Spinner,Label } from 'reactstrap';
 import { enGB } from 'date-fns/locale';
 import { DatePickerCalendar } from 'react-nice-dates';
 import { Calendar } from 'primereact/calendar';
-import { InputNumber } from 'primereact/inputnumber';
 import { TabView, TabPanel } from 'primereact/tabview';
 import {Toast} from "primereact/toast";
 import {useLocation} from "react-router-dom";
@@ -43,7 +42,6 @@ function AddAvailability() {
       const morning=[],afternoon =[],evening=[];
       if(selectedDate){
         availability.forEach((slot)=>{
-          console.log(slot,selectedDate);
           if(slot.Date===format(selectedDate,"yyyy/MM/dd",{locale:enGB})){
             slot.blocks.forEach((timeSlot)=>{
               timeSlot.timeSlots.forEach((ts)=>{
@@ -96,9 +94,8 @@ function AddAvailability() {
             return jsonResponse;
         })
         .then(result=>{
-          console.log("Fetched");
+            console.log(result.body);
             setAvailability(result.body);
-            return true;
         }).catch(error=>{
             console.log(error);
         });
@@ -245,17 +242,17 @@ function AddAvailability() {
       }
       return  <div className="noSlot-label">No slot available</div>
     }
-    const changeDate = async(date)=>{
-      const fetched= await fetchAvailability();
-      if(fetched){
-        fillSlots(date);
+    useEffect(() => {
+      fetchAvailability();
+    }, [activeIndex,date])
+    useEffect(()=>{
+      fillSlots(date).then(()=>{
         setActiveTime(20);
         setLoading(false);
-        if(date){
-                  
-        setDate(date);
-        }
-      }
+      });
+    },[availability]);
+    const changeDate = async(date)=>{
+      setDate(date);
     }
     return (
         <> 
@@ -281,9 +278,6 @@ function AddAvailability() {
                     <h4 className="mt-3">{date?`Selected Date: ${format(date, 'yyyy/MM/dd', { locale: enGB })}`:"No date selected"}</h4>
                     {date?
                     <TabView activeIndex={activeIndex} onTabChange={async (e)=>{
-                        if(e.index===1){
-                          changeDate();
-                        }
                         setActiveIndex(e.index);
                         
                     }}>

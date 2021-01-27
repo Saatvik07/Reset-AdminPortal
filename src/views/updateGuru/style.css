@@ -144,6 +144,9 @@ input[type="file"]::-webkit-file-upload-button:active {
 	border-color: #ff5001 !important;
 	color: #ff5001;
 }
+.update-tabview {
+	width: 100%;
+}
 .p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
 	box-shadow: 0 0 0 0.2rem #ff5001;
 }
