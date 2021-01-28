@@ -108,7 +108,7 @@ export default function Login() {
                                 />
                             </Col>
                             </Row>
-                            <Row>
+                            {/* <Row>
                                 <Col xs={12}>
                                     <p className="mb-0 mt-2">
                                     <small className="text-primary mr-2">
@@ -118,7 +118,7 @@ export default function Login() {
                                     </small>
                                     </p>
                                 </Col>
-                            </Row>
+                            </Row> */}
                             <Row className="mt-4">
                                 <Col xs={12}>
                                     <Button color="primary" type="submit" block>
