@@ -420,7 +420,7 @@ function AddNewVideo() {
                         <TabPanel header = "View Videos">
                             <Container>
                                 <Row>
-                                {guruObj.techniqueVideos.videoList.length>0 ?
+                                {guruObj.techniqueVideos.videoList && guruObj.techniqueVideos.videoList.length>0 ?
                                     guruObj.techniqueVideos.videoList.map((video, key) =>
                                         key % 2 === 0 ? (
                                         <Col lg={6} xs={12} key={key} className="mb-4 pb-2">
